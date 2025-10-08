@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: infotrucks
+  # Configuração do banco de dados local (desenvolvimento)
+  datasource:
+    url: jdbc:h2:mem:smarttruckdb
+    username: sa
+    password: 
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  # Configuração de tamanho máximo para upload de arquivos
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Configurações dos bots
+bot:
+  telegram:
+    username: ${TELEGRAM_BOT_USERNAME}
+    token: ${TELEGRAM_BOT_TOKEN}
+  whatsapp:
+    verify-token: ${WHATSAPP_VERIFY_TOKEN}
+    access-token: ${WHATSAPP_ACCESS_TOKEN}
+    app-secret: ${WHATSAPP_APP_SECRET}
+
+# Configurações de cache
+cache:
+  ttl: 3600 # Tempo de vida do cache em segundos
+  max-size: 1000 # Número máximo de entradas no cache
+
+# Configurações do sistema de tickets
+ticket:
+  sla: 14400 # Tempo de SLA em segundos (4 horas)
+  auto-close: 172800 # Tempo para auto-fechamento em segundos (48 horas)
+
+# Configurações de logging
+logging:
+  level:
+    com.smarttruck: INFO
+    org.springframework: WARN
