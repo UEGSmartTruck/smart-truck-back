@@ -12,57 +12,52 @@ Este projeto serve como exemplo prático de uma aplicação Java moderna, utiliz
 
 ## 📁 Estrutura de Pastas
 
-### `/src/main/java/com/smarttruck`
-Aqui fica todo o código Java do projeto, organizado em pacotes seguindo a Arquitetura Limpa:
+O projeto segue a organização orientada à Arquitetura Limpa (Clean Architecture). A seguir está a estrutura principal do código e a responsabilidade de cada pasta/pacote.
 
-#### 📦 `/application`
-A camada de aplicação coordena o fluxo de dados entre a camada de apresentação e a camada de domínio.
+### Código-fonte Java
 
-- `/service`: Serviços que implementam a lógica de negócio usando as interfaces do domínio
-- `/usecase`: Casos de uso da aplicação, que definem as operações que o sistema pode realizar
+`src/main/java/com/smarttruck`
 
-#### 🛠 `/config`
-Configurações do Spring Boot e outros frameworks.
-- Configuração de beans
-- Configuração de segurança
-- Configuração dos chatbots
+- `application` — Camada de aplicação: coordena casos de uso e integração entre apresentação e domínio.
+   - `service` — Implementações que executam a lógica orquestrada pelos casos de uso.
+   - `usecase` — Contratos / interfaces que representam operações (casos de uso) da aplicação.
 
-#### 🏭 `/domain`
-O coração do sistema! Aqui ficam as regras de negócio puras.
+- `config` — Configurações do Spring e integrações (beans, propriedades, configurações dos bots e security).
 
-- `/model`: As entidades principais do sistema (classes que representam conceitos do negócio)
-- `/repository`: Interfaces que definem como acessar os dados (sem detalhes de implementação)
+- `domain` — Modelo de domínio (regras de negócio puras):
+   - `model` — Entidades e value objects do domínio.
+   - `factory` — Fábricas para criar entidades com estados iniciais.
+   - `repository` — Interfaces que definem como acessar/armazenar entidades (sem dependência de tecnologia).
 
-#### 🔧 `/infrastructure`
-Implementações concretas de interfaces definidas no domínio.
+- `infra` — Implementações concretas (adapters/ports):
+   - `persistence` — Entidades JPA, repositórios Spring Data e implementações in-memory utilizadas em testes.
+   - `repository` — Adaptadores que convertem entre entidades persistentes e modelos do domínio.
+   - `restclient` — Clientes HTTP para serviços externos (se aplicável).
 
-- `/persistence`: Implementações dos repositórios usando JPA
-- `/restclient`: Clientes REST para APIs externas
+- `presentation` — Camada de entrada/saída (API):
+   - `controller` — Endpoints REST (Controllers)
+   - `dto` — Objetos de transferência de dados (requests/responses)
+   - `mapper` — Conversores entre DTOs e modelos de domínio
 
-#### 🎨 `/presentation`
-A interface com o mundo exterior!
+- `shared` — Componentes utilitários e compartilhados (exceções, constantes, utilitários de teste)
 
-- `/controller`: Controllers da API REST
-- `/dto`: Objetos de Transferência de Dados (DTOs)
-- `/mapper`: Conversores entre DTOs e modelos do domínio
+### Recursos e Configurações
 
-#### 🔄 `/shared`
-Componentes compartilhados entre todas as camadas.
-- Utilitários
-- Constantes
-- Exceções personalizadas
+`src/main/resources`
 
-### `/src/main/resources`
-Arquivos de configuração e recursos.
-- `application.yml`: Configurações do Spring Boot
-- Templates de mensagens
-- Scripts SQL (se necessário)
+- `application.yml`, `application-dev.yml`, `application-prod.yml` — Configurações por perfil.
+- `db/migration` — Migrations do Flyway (ex.: V1__create_tickets_table.sql).
+- `sql/`, `templates/` — Arquivos auxiliares e templates usados pela aplicação.
 
-### `/src/test`
-Testes automatizados, seguindo a mesma estrutura do código principal.
-- Testes unitários
-- Testes de integração
-- Testes de API
+### Testes
+
+`src/test/java`
+
+- A estrutura de testes espelha a estrutura do código principal para facilitar testes unitários e de integração.
+- Inclui: testes unitários, `@DataJpaTest` para adapters JPA, testes de controller (MockMvc) e testes de integração com Testcontainers (quando Docker está disponível).
+
+---
+Estas convenções ajudam a manter as regras de negócio isoladas em `domain` e a colocar dependências de infraestrutura dentro de `infra`, reduzindo acoplamento e facilitando testes.
 
 ## 🔄 Fluxo de Dados na Arquitetura Limpa
 1. O usuário envia mensagem pelo WhatsApp/Telegram
@@ -88,7 +83,92 @@ Testes automatizados, seguindo a mesma estrutura do código principal.
    mvn spring-boot:run
    ```
 
-## 📚 Links Úteis para Estudo
+   ### Perfis (dev / prod)
+
+   O projeto agora fornece dois perfis de execução para diferenciar comportamento entre desenvolvimento e produção:
+
+   - `dev` (padrão para desenvolvimento): usa H2 por padrão e habilita o Hibernate `ddl-auto=update`. Flyway fica desabilitado.
+   - `prod`: espera-se que o banco (Postgres) e variáveis sensíveis sejam fornecidos por variáveis de ambiente/secret manager. Flyway é habilitado neste perfil e o Hibernate não deve alterar o esquema (`ddl-auto=none`).
+
+   Como executar com um profile específico:
+
+   ```bash
+   # Dev (usa `application-dev.yml`)
+   set -o allexport; source .env; set +o allexport; mvn -Dspring.profiles.active=dev spring-boot:run
+
+   # Prod (usa `application-prod.yml`)
+   set -o allexport; source .env; set +o allexport; mvn -Dspring.profiles.active=prod -DskipTests package
+   java -jar target/*.jar --spring.profiles.active=prod
+   ```
+
+## �️ Configurando PostgreSQL e variáveis de ambiente
+
+### 1) Criar banco e usuário (psql)
+Conecte-se ao PostgreSQL como administrador e execute:
+
+```sql
+-- conecte-se: psql -U postgres
+CREATE DATABASE smarttruck_db;
+CREATE USER smarttruck_user WITH PASSWORD 's3cret';
+GRANT ALL PRIVILEGES ON DATABASE smarttruck_db TO smarttruck_user;
+\q
+```
+
+### 2) Usar `.env` para carregar variáveis (opcional)
+Crie um arquivo `.env` na raiz do projeto (existe `.env.example` como modelo). Para carregar as variáveis no seu shell (Git Bash / WSL):
+
+```bash
+# Carrega as variáveis do .env para o ambiente atual (bash / WSL)
+set -o allexport; source .env; set +o allexport
+
+# Alternativa: export e executar em uma linha
+# export $(grep -v '^#' .env | xargs) && mvn spring-boot:run
+```
+
+### 3) Propriedades importantes no `.env` / variáveis de ambiente
+
+- SPRING_DATASOURCE_URL (ex: jdbc:postgresql://localhost:5432/smarttruck_db)
+- SPRING_DATASOURCE_USERNAME
+- SPRING_DATASOURCE_PASSWORD
+- SPRING_JPA_DATABASE_PLATFORM (ex: org.hibernate.dialect.PostgreSQLDialect)
+- SPRING_JPA_HIBERNATE_DDL_AUTO (recomendado: validate em produção)
+
+### 4) Executar a aplicação com PostgreSQL
+
+Após carregar as variáveis de ambiente (ou configurar no sistema), execute:
+
+```bash
+mvn -DskipTests package
+mvn spring-boot:run
+```
+
+Ao iniciar, o Flyway aplicará automaticamente as migrations localizadas em `src/main/resources/db/migration`.
+
+## 🧭 Observações
+- Mantenha `.env` fora do controle de versão. Use `.env.example` para indicar variáveis necessárias.
+- Em produção, prefira gerenciadores de segredos (Azure Key Vault, AWS Secrets Manager) em vez de `.env`.
+
+## ✨ Executando as migrations manualmente (Flyway)
+
+Se sua versão do PostgreSQL tem incompatibilidade com a versão do Flyway embarcada no Spring Boot, é possível rodar as migrations manualmente antes de iniciar a aplicação usando o plugin Maven do Flyway.
+
+Exemplo de execução (usando variáveis de ambiente do `.env` ou substituindo na linha de comando):
+
+```bash
+# Carregue seu .env (bash)
+set -o allexport; source .env; set +o allexport
+
+# Execute as migrations com credenciais do .env
+mvn -Dflyway.url=$SPRING_DATASOURCE_URL -Dflyway.user=$SPRING_DATASOURCE_USERNAME -Dflyway.password=$SPRING_DATASOURCE_PASSWORD flyway:migrate
+
+# Ou passe explicitamente (substitua valores)
+mvn -Dflyway.url=jdbc:postgresql://localhost:5432/smarttruck_db -Dflyway.user=smarttruck_user -Dflyway.password=your_password flyway:migrate
+```
+
+Isso permite aplicar as migrations diretamente no banco sem depender da inicialização automática do Flyway pelo Spring Boot.
+
+
+## �📚 Links Úteis para Estudo
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [Arquitetura Limpa](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [API do Telegram](https://core.telegram.org/bots/api)
