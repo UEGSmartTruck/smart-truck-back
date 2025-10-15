@@ -1,9 +1,10 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
-  flyway:
-    enabled: false
+    jpa:
+        hibernate:
+            ddl-auto: none   # para não conflitar com Flyway
+    flyway:
+        enabled: true
+        locations: classpath:db/migration
 
 # Dev datasource defaults: in-memory H2 (override with env vars to use Postgres)
 spring:
