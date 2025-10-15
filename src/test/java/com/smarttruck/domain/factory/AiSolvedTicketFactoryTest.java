@@ -18,6 +18,7 @@ public class AiSolvedTicketFactoryTest {
         Assertions.assertEquals("descr", ticket.getDescription());
         Assertions.assertEquals(TicketStatus.IN_PROGRESS, ticket.getStatus());
         Assertions.assertNotNull(ticket.getCreatedAt());
-        Assertions.assertNotNull(ticket.getUpdatedAt(), "updatedAt should be set when status changed");
+        Assertions.assertNotNull(ticket.getUpdatedAt(),
+            "updatedAt should be set when status changed");
     }
 }

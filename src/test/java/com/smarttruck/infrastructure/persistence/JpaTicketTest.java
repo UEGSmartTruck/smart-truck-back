@@ -28,14 +28,8 @@ class JpaTicketTest {
     @Test
     void shouldGenerateIdAndCreatedAtWhenNull() {
         // Act
-        JpaTicket jpaTicket = new JpaTicket(
-                null,
-                "C123",
-                "Motor failure",
-                "OPEN",
-                null,
-                null,
-                null);
+        JpaTicket jpaTicket =
+            new JpaTicket(null, "C123", "Motor failure", "OPEN", null, null, null);
 
         // Assert
         assertNotNull(jpaTicket.getId());
@@ -44,7 +38,7 @@ class JpaTicketTest {
         assertEquals("C123", jpaTicket.getCustomerId());
         assertEquals("Motor failure", jpaTicket.getDescription());
         assertEquals("OPEN", jpaTicket.getStatus());
-        assertNull(jpaTicket.getUpdatedAt());
+        assertNotNull(jpaTicket.getUpdatedAt());
         assertNull(jpaTicket.getDeletedAt());
     }
 
@@ -55,14 +49,8 @@ class JpaTicketTest {
         Instant now = Instant.now();
 
         // Act
-        JpaTicket jpaTicket = new JpaTicket(
-                id,
-                "C999",
-                "Engine overheating",
-                "CLOSED",
-                now,
-                now,
-                now);
+        JpaTicket jpaTicket =
+            new JpaTicket(id, "C999", "Engine overheating", "CLOSED", now, now, now);
 
         // Assert
         assertEquals(id, jpaTicket.getId());

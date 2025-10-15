@@ -6,10 +6,13 @@ import com.smarttruck.domain.model.Ticket;
 import com.smarttruck.domain.repository.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class CreateTicketServiceTest {
 
@@ -44,7 +47,7 @@ class CreateTicketServiceTest {
         when(ticketRepository.save(ticket)).thenReturn(savedTicket);
 
         // Act
-        Ticket result = createTicketService.create(customerId, description, aiSolved);
+        Ticket result = createTicketService.execute(customerId, description, aiSolved);
 
         // Assert
         verify(aiSolvedTicketFactory).create(customerId, description);
@@ -69,7 +72,7 @@ class CreateTicketServiceTest {
         when(ticketRepository.save(ticket)).thenReturn(savedTicket);
 
         // Act
-        Ticket result = createTicketService.create(customerId, description, aiSolved);
+        Ticket result = createTicketService.execute(customerId, description, aiSolved);
 
         // Assert
         verify(escalatedTicketFactory).create(customerId, description);
@@ -94,7 +97,7 @@ class CreateTicketServiceTest {
         when(ticketRepository.save(ticket)).thenReturn(savedTicket);
 
         // Act
-        Ticket result = createTicketService.create(customerId, description, aiSolved);
+        Ticket result = createTicketService.execute(customerId, description, aiSolved);
 
         // Assert
         assertSame(savedTicket, result);
