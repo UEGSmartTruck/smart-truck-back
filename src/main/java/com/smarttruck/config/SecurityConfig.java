@@ -44,6 +44,6 @@ public class SecurityConfig {
             // Permite que o H2 Console seja renderizado (necessário por causa do .permitAll() acima)
             .headers(headers -> headers.frameOptions(options -> options.sameOrigin()))
 
-            .build(); // Finaliza a construçãoaa
+            .build(); // Finaliza a construçãoaaa
     }
 }
