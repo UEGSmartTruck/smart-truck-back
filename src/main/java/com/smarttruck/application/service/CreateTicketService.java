@@ -17,7 +17,7 @@ import java.util.Map;
  * fábrica
  * dependendo se o ticket foi (parcialmente) resolvido por uma IA ou precisa ser
  * escalado.
- *
+ * <p>
  * Inputs: customerId, description, aiSolved flag.
  * Output: Ticket persistido com id e timestamps.
  */
@@ -28,12 +28,10 @@ public class CreateTicketService implements CreateTicketUseCase {
     private final Map<Boolean, TicketFactory> factoryByAiSolved;
 
     public CreateTicketService(TicketRepository ticketRepository,
-            AiSolvedTicketFactory aiSolvedTicketFactory,
-            EscalatedTicketFactory escalatedTicketFactory) {
+                               AiSolvedTicketFactory aiSolvedTicketFactory,
+                               EscalatedTicketFactory escalatedTicketFactory) {
         this.ticketRepository = ticketRepository;
-        this.factoryByAiSolved = Map.of(
-                true, aiSolvedTicketFactory,
-                false, escalatedTicketFactory);
+        this.factoryByAiSolved = Map.of(true, aiSolvedTicketFactory, false, escalatedTicketFactory);
     }
 
     /**
@@ -46,7 +44,7 @@ public class CreateTicketService implements CreateTicketUseCase {
      * @return ticket persistido com id e timestamps preenchidos
      */
     @Override
-    public Ticket create(String customerId, String description, boolean aiSolved) {
+    public Ticket execute(String customerId, String description, boolean aiSolved) {
         TicketFactory factory = factoryByAiSolved.get(aiSolved);
         Ticket ticket = factory.create(customerId, description);
         return ticketRepository.save(ticket);

@@ -18,8 +18,8 @@ public class Ticket {
     private final String id;
     private final String customerId;
     private final String description;
-    private TicketStatus status;
     private final Instant createdAt;
+    private TicketStatus status;
     private Instant updatedAt;
     private Instant deletedAt;
 
@@ -36,7 +36,7 @@ public class Ticket {
         this.description = description;
         this.status = TicketStatus.OPEN;
         this.createdAt = Instant.now();
-        this.updatedAt = null;
+        this.updatedAt = Instant.now();
         this.deletedAt = null;
     }
 
@@ -52,8 +52,8 @@ public class Ticket {
      * @param updatedAt   instante da última atualização (pode ser {@code null})
      * @param deletedAt   instante de exclusão lógica (pode ser {@code null})
      */
-    public Ticket(String id, String customerId, String description, TicketStatus status, Instant createdAt,
-            Instant updatedAt, Instant deletedAt) {
+    public Ticket(String id, String customerId, String description, TicketStatus status,
+                  Instant createdAt, Instant updatedAt, Instant deletedAt) {
         this.id = id;
         this.customerId = customerId;
         this.description = description;
@@ -79,18 +79,6 @@ public class Ticket {
         return status;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
-    }
-
     /**
      * Atualiza o status do ticket e ajusta o timestamp {@code updatedAt} para o
      * instante atual.
@@ -102,6 +90,14 @@ public class Ticket {
         this.updatedAt = Instant.now();
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
     /**
      * Define explicitamente o instante da última atualização. Usado para
      * reconstrução a partir de persistência ou em testes.
@@ -110,6 +106,10 @@ public class Ticket {
      */
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
     }
 
     /**

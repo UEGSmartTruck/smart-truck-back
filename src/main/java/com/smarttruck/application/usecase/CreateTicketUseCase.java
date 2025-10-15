@@ -14,5 +14,5 @@ public interface CreateTicketUseCase {
      * @param aiSolved    indica se a IA já resolveu parcialmente o problema
      * @return ticket criado e persistido
      */
-    Ticket create(String customerId, String description, boolean aiSolved);
+    Ticket execute(String customerId, String description, boolean aiSolved);
 }

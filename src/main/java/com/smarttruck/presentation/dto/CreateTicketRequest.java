@@ -2,7 +2,7 @@ package com.smarttruck.presentation.dto;
 
 /**
  * Payload de requisição para criação de ticket via API.
- *
+ * <p>
  * Exemplo JSON:
  * {
  * "customerId": "cliente-123",

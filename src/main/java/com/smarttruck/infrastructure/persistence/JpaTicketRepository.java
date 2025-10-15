@@ -1,13 +1,12 @@
 package com.smarttruck.infrastructure.persistence;
 
-import org.springframework.stereotype.Repository;
-
 import com.smarttruck.domain.model.Ticket;
 import com.smarttruck.domain.repository.TicketRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * Adaptador que usa Spring Data JPA para persistir tickets no banco relacional.
- *
+ * <p>
  * Esta implementação converte entre a entidade de domínio {@link Ticket} e a
  * entidade JPA {@link JpaTicket} antes de delegar ao repositório JPA gerado
  * (`SpringDataJpaTicketRepository`).
