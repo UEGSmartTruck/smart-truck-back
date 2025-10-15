@@ -84,5 +84,6 @@ ticket:
 logging:
     level:
         com.smarttruck: ${LOG_LEVEL_SMARTTRUCK:INFO}
+        org.springframework.web: DEBUG
         org.springframework: ${LOG_LEVEL_SPRING:WARN}
         liquibase: ${LOG_LEVEL_LIQUIBASE:INFO}
