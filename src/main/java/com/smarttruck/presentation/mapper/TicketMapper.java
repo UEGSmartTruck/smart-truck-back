@@ -6,7 +6,7 @@ import com.smarttruck.presentation.dto.CreateTicketResponse;
 /**
  * Mapeador simples entre a entidade de domínio {@link Ticket} e o DTO de
  * apresentação {@link CreateTicketResponse}.
- *
+ * <p>
  * Implementado como utilitário estático sem estado.
  */
 public final class TicketMapper {

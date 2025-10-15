@@ -2,6 +2,7 @@ package com.smarttruck.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smarttruck.application.usecase.CreateTicketUseCase;
+import com.smarttruck.config.SecurityConfig;
 import com.smarttruck.domain.model.Ticket;
 import com.smarttruck.domain.model.TicketStatus;
 import com.smarttruck.presentation.dto.CreateTicketRequest;
@@ -11,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Import(SecurityConfig.class)
 @WebMvcTest(TicketController.class)
 class TicketControllerIntegrationTest {
 
@@ -37,14 +40,8 @@ class TicketControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        ticket = new Ticket(
-                "abc-123",
-                "cust-001",
-                "Motor overheating",
-                TicketStatus.OPEN,
-                Instant.parse("2024-10-10T10:10:10Z"),
-                null,
-                null);
+        ticket = new Ticket("abc-123", "cust-001", "Motor overheating", TicketStatus.OPEN,
+            Instant.parse("2024-10-10T10:10:10Z"), null, null);
     }
 
     @Test
@@ -55,21 +52,19 @@ class TicketControllerIntegrationTest {
         request.setDescription("Motor overheating");
         request.setAiSolved(false);
 
-        Mockito.when(createTicketUseCase.create(anyString(), anyString(), anyBoolean()))
-                .thenReturn(ticket);
+        Mockito.when(createTicketUseCase.execute(anyString(), anyString(), anyBoolean()))
+            .thenReturn(ticket);
 
         // Act & Assert
-        mockMvc.perform(post("/api/tickets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // Testa campos do JSON de resposta
-                .andExpect(jsonPath("$.id").value("abc-123"))
-                .andExpect(jsonPath("$.customerId").value("cust-001"))
-                .andExpect(jsonPath("$.description").value("Motor overheating"))
-                .andExpect(jsonPath("$.status").value("OPEN"))
-                .andExpect(jsonPath("$.createdAt").value("2024-10-10T10:10:10Z"));
+        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            // Testa campos do JSON de resposta
+            .andExpect(jsonPath("$.id").value("abc-123"))
+            .andExpect(jsonPath("$.customerId").value("cust-001"))
+            .andExpect(jsonPath("$.description").value("Motor overheating"))
+            .andExpect(jsonPath("$.status").value("OPEN"))
+            .andExpect(jsonPath("$.createdAt").value("2024-10-10T10:10:10Z"));
     }
 
     @Test
@@ -79,16 +74,14 @@ class TicketControllerIntegrationTest {
         request.setCustomerId("cust-002");
         request.setDescription("Brake problem");
 
-        Mockito.when(createTicketUseCase.create("cust-002", "Brake problem", false))
-                .thenReturn(ticket);
+        Mockito.when(createTicketUseCase.execute("cust-002", "Brake problem", false))
+            .thenReturn(ticket);
 
         // Act & Assert
-        mockMvc.perform(post("/api/tickets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("abc-123"))
-                .andExpect(jsonPath("$.customerId").value("cust-001")); // ticket mockado sempre retorna esse valor
+        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("abc-123")).andExpect(
+                jsonPath("$.customerId").value("cust-001")); // ticket mockado sempre retorna esse valor
     }
 
     @Test
@@ -97,9 +90,8 @@ class TicketControllerIntegrationTest {
         CreateTicketRequest invalidRequest = new CreateTicketRequest();
 
         // Act & Assert
-        mockMvc.perform(post("/api/tickets")
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 }

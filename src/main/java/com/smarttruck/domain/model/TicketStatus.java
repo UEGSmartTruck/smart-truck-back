@@ -4,7 +4,9 @@ package com.smarttruck.domain.model;
  * Enum que representa os estados possíveis de um {@link Ticket}.
  */
 public enum TicketStatus {
-    /** Ticket recém-criado, aguardando processamento. */
+    /**
+     * Ticket recém-criado, aguardando processamento.
+     */
     OPEN,
 
     /**
@@ -13,9 +15,13 @@ public enum TicketStatus {
      */
     IN_PROGRESS,
 
-    /** Ticket que foi escalado para atendimento humano/especializado. */
+    /**
+     * Ticket que foi escalado para atendimento humano/especializado.
+     */
     ESCALATED,
 
-    /** Ticket resolvido/fechado. */
+    /**
+     * Ticket resolvido/fechado.
+     */
     RESOLVED
 }

@@ -5,7 +5,7 @@ import com.smarttruck.domain.model.Ticket;
 /**
  * Fábrica para criação de {@link Ticket} com diferentes políticas de
  * inicialização de estado.
- *
+ * <p>
  * Implementações concretas definem o status inicial do ticket (ex.: AI-solved
  * ou escalado).
  */

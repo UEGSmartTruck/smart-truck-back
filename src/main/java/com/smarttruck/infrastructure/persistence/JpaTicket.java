@@ -1,12 +1,16 @@
 package com.smarttruck.infrastructure.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.Instant;
 import java.util.UUID;
 
 /**
  * Entidade JPA que representa a tabela de tickets no banco de dados.
- *
+ * <p>
  * Esta classe é usada internamente pelo adaptador Spring Data para mapear os
  * campos entre a camada de persistência e a entidade de domínio {@code Ticket}.
  */
@@ -44,14 +48,14 @@ public class JpaTicket {
      * Construtor auxiliar utilizado pelo adaptador para criar a entidade a partir
      * do domínio.
      */
-    public JpaTicket(String id, String customerId, String description, String status, Instant createdAt,
-            Instant updatedAt, Instant deletedAt) {
+    public JpaTicket(String id, String customerId, String description, String status,
+                     Instant createdAt, Instant updatedAt, Instant deletedAt) {
         this.id = id == null ? UUID.randomUUID().toString() : id;
         this.customerId = customerId;
         this.description = description;
         this.status = status;
         this.createdAt = createdAt == null ? Instant.now() : createdAt;
-        this.updatedAt = updatedAt;
+        this.updatedAt = updatedAt == null ? Instant.now() : updatedAt;
         this.deletedAt = deletedAt;
     }
 

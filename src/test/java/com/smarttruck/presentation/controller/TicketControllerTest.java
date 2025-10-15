@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class TicketControllerTest {
@@ -37,10 +37,10 @@ class TicketControllerTest {
         request.setAiSolved(true);
 
         Ticket ticket = new Ticket("1", "123", "Motor issue", null, Instant.now(), null, null);
-        CreateTicketResponse expectedResponse = new CreateTicketResponse("1", "123", "Motor issue", "CREATED",
-                Instant.now());
+        CreateTicketResponse expectedResponse =
+            new CreateTicketResponse("1", "123", "Motor issue", "CREATED", Instant.now());
 
-        when(createTicketUseCase.create("123", "Motor issue", true)).thenReturn(ticket);
+        when(createTicketUseCase.execute("123", "Motor issue", true)).thenReturn(ticket);
 
         try (MockedStatic<TicketMapper> mapperMock = Mockito.mockStatic(TicketMapper.class)) {
             mapperMock.when(() -> TicketMapper.toResponse(ticket)).thenReturn(expectedResponse);
@@ -51,7 +51,7 @@ class TicketControllerTest {
             // Assert
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
             assertEquals(expectedResponse, responseEntity.getBody());
-            verify(createTicketUseCase).create("123", "Motor issue", true);
+            verify(createTicketUseCase).execute("123", "Motor issue", true);
         }
     }
 
@@ -64,10 +64,10 @@ class TicketControllerTest {
         request.setAiSolved(null); // null deve virar false
 
         Ticket ticket = new Ticket("2", "999", "Brake check", null, Instant.now(), null, null);
-        CreateTicketResponse expectedResponse = new CreateTicketResponse("2", "999", "Brake check", "CREATED",
-                Instant.now());
+        CreateTicketResponse expectedResponse =
+            new CreateTicketResponse("2", "999", "Brake check", "CREATED", Instant.now());
 
-        when(createTicketUseCase.create("999", "Brake check", false)).thenReturn(ticket);
+        when(createTicketUseCase.execute("999", "Brake check", false)).thenReturn(ticket);
 
         try (MockedStatic<TicketMapper> mapperMock = Mockito.mockStatic(TicketMapper.class)) {
             mapperMock.when(() -> TicketMapper.toResponse(ticket)).thenReturn(expectedResponse);
@@ -78,7 +78,7 @@ class TicketControllerTest {
             // Assert
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
             assertEquals(expectedResponse, responseEntity.getBody());
-            verify(createTicketUseCase).create("999", "Brake check", false);
+            verify(createTicketUseCase).execute("999", "Brake check", false);
         }
     }
 }

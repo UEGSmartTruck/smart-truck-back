@@ -14,7 +14,7 @@ public class TicketTest {
         Assertions.assertEquals("c1", t.getCustomerId());
         Assertions.assertEquals("d1", t.getDescription());
         Assertions.assertNotNull(t.getCreatedAt());
-        Assertions.assertNull(t.getUpdatedAt());
+        Assertions.assertNotNull(t.getUpdatedAt());
 
         Instant before = t.getCreatedAt();
         Thread.sleep(5);

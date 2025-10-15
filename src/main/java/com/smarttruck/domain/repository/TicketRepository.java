@@ -4,7 +4,7 @@ import com.smarttruck.domain.model.Ticket;
 
 /**
  * Porta de repositório para persistência de {@link Ticket} no domínio.
- *
+ * <p>
  * Implementações podem ser em memória (desenvolvimento) ou baseada em JPA para
  * produção.
  */

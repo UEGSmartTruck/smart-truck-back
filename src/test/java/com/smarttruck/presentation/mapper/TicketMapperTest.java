@@ -1,7 +1,5 @@
 package com.smarttruck.presentation.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.smarttruck.domain.model.Ticket;
 import com.smarttruck.domain.model.TicketStatus;
 import com.smarttruck.presentation.dto.CreateTicketResponse;
@@ -9,20 +7,22 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 class TicketMapperTest {
 
     @Test
     void shouldMapDomainTicketToResponseCorrectly() {
         // Arrange
         Instant now = Instant.now();
-        Ticket ticket = new Ticket(
-                "1", // id
-                "customer-123", // customerId
-                "Problema no caminhão", // description
-                TicketStatus.OPEN, // status
-                now, // createdAt
-                now, // updatedAt
-                null // deletedAt
+        Ticket ticket = new Ticket("1", // id
+            "customer-123", // customerId
+            "Problema no caminhão", // description
+            TicketStatus.OPEN, // status
+            now, // createdAt
+            now, // updatedAt
+            null // deletedAt
         );
 
         // Act

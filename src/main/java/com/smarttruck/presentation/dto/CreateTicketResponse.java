@@ -1,8 +1,8 @@
 package com.smarttruck.presentation.dto;
 
-import java.time.Instant;
-
 import jakarta.validation.constraints.NotBlank;
+
+import java.time.Instant;
 
 /**
  * DTO de resposta após criação de um ticket.
@@ -23,12 +23,8 @@ public class CreateTicketResponse {
     public CreateTicketResponse() {
     }
 
-    public CreateTicketResponse(
-            String id,
-            String customerId,
-            String description,
-            String status,
-            Instant createdAt) {
+    public CreateTicketResponse(String id, String customerId, String description, String status,
+                                Instant createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.description = description;

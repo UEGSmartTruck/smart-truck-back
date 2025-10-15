@@ -28,14 +28,7 @@ class JpaTicketMapperTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         Instant now = Instant.now();
-        JpaTicket jpaTicket = new JpaTicket(
-                id,
-                "C001",
-                "Engine failure",
-                "OPEN",
-                now,
-                now,
-                null);
+        JpaTicket jpaTicket = new JpaTicket(id, "C001", "Engine failure", "OPEN", now, now, null);
 
         // Act
         Ticket domain = mapper.toDomain(jpaTicket);
@@ -56,14 +49,8 @@ class JpaTicketMapperTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         Instant now = Instant.now();
-        Ticket domain = new Ticket(
-                id,
-                "C002",
-                "Brake issue",
-                TicketStatus.RESOLVED,
-                now,
-                now,
-                null);
+        Ticket domain =
+            new Ticket(id, "C002", "Brake issue", TicketStatus.RESOLVED, now, now, null);
 
         // Act
         JpaTicket jpaTicket = mapper.toEntity(domain);
@@ -84,14 +71,8 @@ class JpaTicketMapperTest {
         // Arrange
         Instant now = Instant.now();
 
-        Ticket domain = new Ticket(
-                UUID.randomUUID().toString(),
-                "C003",
-                "Sensor fault",
-                TicketStatus.IN_PROGRESS,
-                now,
-                null,
-                null);
+        Ticket domain = new Ticket(UUID.randomUUID().toString(), "C003", "Sensor fault",
+            TicketStatus.IN_PROGRESS, now, null, null);
 
         // Act
         JpaTicket entity = mapper.toEntity(domain);

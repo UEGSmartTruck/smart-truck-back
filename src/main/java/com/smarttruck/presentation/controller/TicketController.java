@@ -4,9 +4,7 @@ import com.smarttruck.application.usecase.CreateTicketUseCase;
 import com.smarttruck.presentation.dto.CreateTicketRequest;
 import com.smarttruck.presentation.dto.CreateTicketResponse;
 import com.smarttruck.presentation.mapper.TicketMapper;
-
 import jakarta.validation.Valid;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller REST que expõe endpoints para gerenciamento de tickets.
- *
+ * <p>
  * Endpoints:
  * - POST /api/tickets : cria um novo ticket a partir do payload
  * {@link CreateTicketRequest}
@@ -38,9 +36,11 @@ public class TicketController {
      * @return {@link CreateTicketResponse} com os dados do ticket criado
      */
     @PostMapping
-    public ResponseEntity<CreateTicketResponse> create(@Valid @RequestBody CreateTicketRequest request) {
+    public ResponseEntity<CreateTicketResponse> create(
+        @Valid @RequestBody CreateTicketRequest request) {
         boolean aiSolved = request.getAiSolved() != null ? request.getAiSolved() : false;
-        var ticket = createTicketUseCase.create(request.getCustomerId(), request.getDescription(), aiSolved);
+        var ticket = createTicketUseCase.execute(request.getCustomerId(), request.getDescription(),
+            aiSolved);
 
         if (ticket == null) {
             return ResponseEntity.badRequest().build();
