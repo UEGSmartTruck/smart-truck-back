@@ -1,3 +1,5 @@
+
+
 spring:
   application:
     name: infotrucks
@@ -52,4 +54,4 @@ logging:
   level:
     com.smarttruck: INFO
     org.springframework: WARN
-    org.springframework.security: DEBUG
+    org.springframework.security: TRACE

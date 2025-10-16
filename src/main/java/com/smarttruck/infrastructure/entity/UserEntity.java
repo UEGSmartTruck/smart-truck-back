@@ -1,5 +1,5 @@
 // src/main/java/com/smarttruck/infra/entity/UserEntity.java
-package com.smarttruck.infra.entity;
+package com.smarttruck.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

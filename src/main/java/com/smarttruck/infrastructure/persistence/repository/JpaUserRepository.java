@@ -1,9 +1,9 @@
 // src/main/java/com/smarttruck/infra/persistence/repository/JpaUserRepository.java
-package com.smarttruck.infra.persistence.repository;
+package com.smarttruck.infrastructure.persistence.repository;
 
 import com.smarttruck.domain.model.User;
 import com.smarttruck.domain.repository.UserRepository;
-import com.smarttruck.infra.entity.UserEntity;
+import com.smarttruck.infrastructure.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,7 +41,3 @@ public class JpaUserRepository implements UserRepository {
     }
 }
 
-// Interface auxiliar que realmente estende JpaRepository
-interface SpringDataJpaUserRepo extends org.springframework.data.jpa.repository.JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByEmail(String email);
-}
