@@ -9,3 +9,8 @@ databaseChangeLog:
           relativeToChangelogFile: true
           sqlFile:
               endDelimiter: ";"
+    - include:
+          file: migration/V3__insert_admin_user.sql
+          relativeToChangelogFile: true
+          sqlFile:
+              endDelimiter: ";"
