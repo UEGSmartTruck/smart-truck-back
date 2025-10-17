@@ -1,54 +1,89 @@
 spring:
-  application:
-    name: infotrucks
-  # Configuração do banco de dados local (desenvolvimento)
-  datasource:
-    url: jdbc:h2:mem:smarttruckdb
-    username: sa
-    password: 
-    driverClassName: org.h2.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  # Configuração de tamanho máximo para upload de arquivos
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+    application:
+        name: smarttruck
+
+    # ============================
+    # BANCO DE DADOS
+    # ============================
+    datasource:
+        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/smarttruck_db}
+        username: ${SPRING_DATASOURCE_USERNAME:postgres}
+        password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+        driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
+
+    jpa:
+        database-platform: ${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.PostgreSQLDialect}
+        hibernate:
+            ddl-auto: none # Liquibase controla o schema
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        show-sql: true
+
+    # ============================
+    # H2 CONSOLE (opcional)
+    # ============================
+    h2:
+        console:
+            enabled: true
+            path: /h2-console
+
+    # ============================
+    # LIQUIBASE (MIGRATIONS)
+    # ============================
+    liquibase:
+        enabled: true
+        change-log: classpath:db/changelog-master.yaml
+        contexts: development, production
+        default-schema: public
+        # se quiser gerar SQL ao invés de aplicar direto, use:
+        # drop-first: false
+        # should-run: true
+
+    # ============================
+    # SERVIDOR
+    # ============================
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
 
 server:
-  port: 8080
-  servlet:
-    context-path: /api
+    port: ${SERVER_PORT:8080}
+    servlet:
+        context-path: ${SERVER_CONTEXT_PATH:/api}
 
-# Configurações dos bots
+# ============================
+# CONFIGURAÇÕES DE BOTS
+# ============================
 bot:
-  telegram:
-    username: ${TELEGRAM_BOT_USERNAME}
-    token: ${TELEGRAM_BOT_TOKEN}
-  whatsapp:
-    verify-token: ${WHATSAPP_VERIFY_TOKEN}
-    access-token: ${WHATSAPP_ACCESS_TOKEN}
-    app-secret: ${WHATSAPP_APP_SECRET}
+    telegram:
+        username: ${TELEGRAM_BOT_USERNAME}
+        token: ${TELEGRAM_BOT_TOKEN}
+    whatsapp:
+        verify-token: ${WHATSAPP_VERIFY_TOKEN}
+        access-token: ${WHATSAPP_ACCESS_TOKEN}
+        app-secret: ${WHATSAPP_APP_SECRET}
 
-# Configurações de cache
+# ============================
+# CACHE
+# ============================
 cache:
-  ttl: 3600 # Tempo de vida do cache em segundos
-  max-size: 1000 # Número máximo de entradas no cache
+    ttl: ${CACHE_TTL:3600} # Tempo de vida em segundos
+    max-size: ${CACHE_MAX_SIZE:1000} # Máximo de entradas no cache
 
-# Configurações do sistema de tickets
+# ============================
+# SISTEMA DE TICKETS
+# ============================
 ticket:
-  sla: 14400 # Tempo de SLA em segundos (4 horas)
-  auto-close: 172800 # Tempo para auto-fechamento em segundos (48 horas)
+    sla: ${TICKET_SLA:14400} # SLA (4h)
+    auto-close: ${TICKET_AUTO_CLOSE:172800} # Auto-fechamento (48h)
 
-# Configurações de logging
+# ============================
+# LOGGING
+# ============================
 logging:
-  level:
-    com.smarttruck: INFO
-    org.springframework: WARN
+    level:
+        com.smarttruck: ${LOG_LEVEL_SMARTTRUCK:INFO}
+        org.springframework.web: DEBUG
+        org.springframework: ${LOG_LEVEL_SPRING:WARN}
+        liquibase: ${LOG_LEVEL_LIQUIBASE:INFO}

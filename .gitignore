@@ -6,6 +6,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea/
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -126,21 +127,7 @@ fabric.properties
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
-# ===================================================================
-# IntelliJ IDEA Files - ADICIONE ESTA SEÇÃO
-# ===================================================================
-.idea/
-*.iml
-*.ipr
-*.iws
-out/
 
-# Arquivos de Build do Maven
-target/
-
-# Outros arquivos gerados
-*.log
-*.backup
 # Package Files #
 *.jar
 *.war
@@ -193,3 +180,6 @@ buildNumber.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,visualstudiocode,maven
+.env
+.vscode/
+.githubcopilot/
