@@ -126,7 +126,21 @@ fabric.properties
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+# ===================================================================
+# IntelliJ IDEA Files - ADICIONE ESTA SEÇÃO
+# ===================================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
 
+# Arquivos de Build do Maven
+target/
+
+# Outros arquivos gerados
+*.log
+*.backup
 # Package Files #
 *.jar
 *.war
