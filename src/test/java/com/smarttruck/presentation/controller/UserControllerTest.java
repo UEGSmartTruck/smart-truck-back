@@ -26,40 +26,34 @@ class UserControllerTest {
     @Test
     void create_shouldReturn200AndResponseWhenUserCreated() {
         // Arrange
-        CreateUserRequest request = new CreateUserRequest();
-        request.setName("Alice");
-        request.setEmail("alice@example.com");
-        request.setPassword("password123");
-        request.setPhone("1234567890");
+        CreateUserRequest request =
+            new CreateUserRequest("Alice", "alice@example.com", "password123", "1234567890");
 
         User user = new User("Alice", "1234567890", "alice@example.com", "hashedPassword");
 
-        when(createUserUseCase.execute(request.getName(), request.getEmail(), request.getPassword(),
-            request.getPhone())).thenReturn(user);
+        when(createUserUseCase.execute(request.name(), request.email(), request.password(),
+            request.phone())).thenReturn(user);
 
         // Act
         ResponseEntity<CreateUserResponse> response = userController.create(request);
 
         // Assert
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(user.getName(), response.getBody().getName());
         assertEquals(user.getEmail(), response.getBody().getEmail());
         assertEquals(user.getPhone(), response.getBody().getPhone());
 
         // Verifica que o use case foi chamado com os parâmetros corretos
-        verify(createUserUseCase).execute(request.getName(), request.getEmail(),
-            request.getPassword(), request.getPhone());
+        verify(createUserUseCase).execute(request.name(), request.email(), request.password(),
+            request.phone());
     }
 
     @Test
     void create_shouldReturn400WhenUserIsNull() {
         // Arrange
-        CreateUserRequest request = new CreateUserRequest();
-        request.setName("Bob");
-        request.setEmail("bob@example.com");
-        request.setPassword("pass123");
-        request.setPhone("0987654321");
+        CreateUserRequest request =
+            new CreateUserRequest("Bob", "bob@example.com", "pass123", "0987654321");
 
         when(createUserUseCase.execute(anyString(), anyString(), anyString(),
             anyString())).thenReturn(null);
@@ -68,21 +62,18 @@ class UserControllerTest {
         ResponseEntity<CreateUserResponse> response = userController.create(request);
 
         // Assert
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCode().value());
         assertNull(response.getBody());
 
-        verify(createUserUseCase).execute(request.getName(), request.getEmail(),
-            request.getPassword(), request.getPhone());
+        verify(createUserUseCase).execute(request.name(), request.email(), request.password(),
+            request.phone());
     }
 
     @Test
     void create_shouldCallUseCaseWithCorrectArguments() {
         // Arrange
-        CreateUserRequest request = new CreateUserRequest();
-        request.setName("Charlie");
-        request.setEmail("charlie@example.com");
-        request.setPassword("mypassword");
-        request.setPhone("5555555555");
+        CreateUserRequest request =
+            new CreateUserRequest("Charlie", "charlie@example.com", "mypassword", "5555555555");
 
         User user = new User("Charlie", "5555555555", "charlie@example.com", "hashedPass");
         when(createUserUseCase.execute(anyString(), anyString(), anyString(),
@@ -100,9 +91,9 @@ class UserControllerTest {
         verify(createUserUseCase).execute(nameCaptor.capture(), emailCaptor.capture(),
             passwordCaptor.capture(), phoneCaptor.capture());
 
-        assertEquals(request.getName(), nameCaptor.getValue());
-        assertEquals(request.getEmail(), emailCaptor.getValue());
-        assertEquals(request.getPassword(), passwordCaptor.getValue());
-        assertEquals(request.getPhone(), phoneCaptor.getValue());
+        assertEquals(request.name(), nameCaptor.getValue());
+        assertEquals(request.email(), emailCaptor.getValue());
+        assertEquals(request.password(), passwordCaptor.getValue());
+        assertEquals(request.phone(), phoneCaptor.getValue());
     }
 }
