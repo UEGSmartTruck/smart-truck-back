@@ -31,10 +31,7 @@ class TicketControllerTest {
     @Test
     void shouldCreateTicketSuccessfully_whenAiSolvedIsTrue() {
         // Arrange
-        CreateTicketRequest request = new CreateTicketRequest();
-        request.setCustomerId("123");
-        request.setDescription("Motor issue");
-        request.setAiSolved(true);
+        CreateTicketRequest request = new CreateTicketRequest("123", "Motor issue", true);
 
         Ticket ticket = new Ticket("1", "123", "Motor issue", null, Instant.now(), null, null);
         CreateTicketResponse expectedResponse =
@@ -57,11 +54,8 @@ class TicketControllerTest {
 
     @Test
     void shouldCreateTicketWithAiSolvedFalse_whenAiSolvedIsNull() {
-        // Arrange
-        CreateTicketRequest request = new CreateTicketRequest();
-        request.setCustomerId("999");
-        request.setDescription("Brake check");
-        request.setAiSolved(null); // null deve virar false
+        // Arrange — aiSolved = null (Jackson pode desserializar assim se campo vier ausente)
+        CreateTicketRequest request = new CreateTicketRequest("999", "Brake check", null);
 
         Ticket ticket = new Ticket("2", "999", "Brake check", null, Instant.now(), null, null);
         CreateTicketResponse expectedResponse =

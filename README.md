@@ -166,6 +166,12 @@ mvn -Dflyway.url=jdbc:postgresql://localhost:5432/smarttruck_db -Dflyway.user=sm
 
 Isso permite aplicar as migrations diretamente no banco sem depender da inicialização automática do Flyway pelo Spring Boot.
 
+## cURL para testar login válido
+curl -v -X POST http://localhost:8080/api/login   -H "Content-Type: application/json"   -d '{"email":"admin@smarttruck.com","password":"LouvadoSejaDeus"}'
+
+## cURL para testar login inválido
+curl -v -X POST http://localhost:8080/api/login   -H "Content-Type: application/json"   -d '{"email":"invalido@smarttruck.com","password":"LouvadoSejaDeus"}'
+
 
 ## �📚 Links Úteis para Estudo
 - [Spring Boot](https://spring.io/projects/spring-boot)

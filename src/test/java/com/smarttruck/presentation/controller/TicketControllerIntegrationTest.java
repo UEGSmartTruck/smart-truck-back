@@ -1,19 +1,18 @@
 package com.smarttruck.presentation.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smarttruck.application.usecase.CreateTicketUseCase;
-import com.smarttruck.config.SecurityConfig;
 import com.smarttruck.domain.model.Ticket;
 import com.smarttruck.domain.model.TicketStatus;
-import com.smarttruck.presentation.dto.CreateTicketRequest;
+import com.smarttruck.shared.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -23,18 +22,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Import(SecurityConfig.class)
+@AutoConfigureMockMvc(addFilters = false) // desativa filtros de segurança para testes
 @WebMvcTest(TicketController.class)
+@ContextConfiguration(classes = {TicketController.class}) // carrega apenas o controller
 class TicketControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private CreateTicketUseCase createTicketUseCase;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private Ticket ticket;
 
@@ -46,20 +46,20 @@ class TicketControllerIntegrationTest {
 
     @Test
     void shouldReturn200AndResponseBody_whenRequestIsValid() throws Exception {
-        // Arrange
-        CreateTicketRequest request = new CreateTicketRequest();
-        request.setCustomerId("cust-001");
-        request.setDescription("Motor overheating");
-        request.setAiSolved(false);
+        String requestJson = """
+                {
+                  "customerId": "cust-001",
+                  "description": "Motor overheating",
+                  "aiSolved": false
+                }
+            """;
 
         Mockito.when(createTicketUseCase.execute(anyString(), anyString(), anyBoolean()))
             .thenReturn(ticket);
 
-        // Act & Assert
-        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            // Testa campos do JSON de resposta
+        mockMvc.perform(
+                post("/tickets").contentType(MediaType.APPLICATION_JSON).content(requestJson))
+            .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value("abc-123"))
             .andExpect(jsonPath("$.customerId").value("cust-001"))
             .andExpect(jsonPath("$.description").value("Motor overheating"))
@@ -69,29 +69,28 @@ class TicketControllerIntegrationTest {
 
     @Test
     void shouldSetAiSolvedToFalse_whenFieldIsMissing() throws Exception {
-        // Arrange: campo aiSolved ausente → deve ser tratado como false
-        CreateTicketRequest request = new CreateTicketRequest();
-        request.setCustomerId("cust-002");
-        request.setDescription("Brake problem");
+        String requestJson = """
+                {
+                  "customerId": "cust-002",
+                  "description": "Brake problem"
+                }
+            """;
 
         Mockito.when(createTicketUseCase.execute("cust-002", "Brake problem", false))
             .thenReturn(ticket);
 
-        // Act & Assert
-        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value("abc-123")).andExpect(
-                jsonPath("$.customerId").value("cust-001")); // ticket mockado sempre retorna esse valor
+        mockMvc.perform(
+                post("/tickets").contentType(MediaType.APPLICATION_JSON).content(requestJson))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.id").value("abc-123"))
+            .andExpect(jsonPath("$.customerId").value("cust-001"));
     }
 
     @Test
     void shouldReturn400_whenRequestIsInvalid() throws Exception {
-        // Arrange: request sem campos obrigatórios
-        CreateTicketRequest invalidRequest = new CreateTicketRequest();
+        String invalidJson = "{}";
 
-        // Act & Assert
-        mockMvc.perform(post("/api/tickets").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidRequest)))
+        mockMvc.perform(
+                post("/tickets").contentType(MediaType.APPLICATION_JSON).content(invalidJson))
             .andExpect(status().isBadRequest());
     }
 }

@@ -1,5 +1,6 @@
 package com.smarttruck.shared.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -11,12 +12,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
+    public static final long VALIDITY_IN_MS = 3600000; // 1 hora
     private final Key secretKey = Keys.hmacShaKeyFor("MinhaChaveSecretaMuitoLongaParaJWT1234567890".getBytes());
-    private final long validityInMs = 3600000; // 1 hora
 
     public String generateToken(String userId, String email) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + validityInMs);
+
+        Date expiry = new Date(now.getTime() + VALIDITY_IN_MS);
 
         return Jwts.builder()
             .setSubject(userId)
@@ -36,13 +38,13 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder()
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
             .setSigningKey(secretKey)
             .build()
             .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
+            .getBody();
+        return claims.get("email", String.class);
     }
 
 }

@@ -21,26 +21,48 @@ public class SecurityConfig {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    /**
+     * Define a configuração principal de segurança da aplicação.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable() // desabilita CSRF para APIs REST
-            .authorizeHttpRequests()
-            // ALTERAÇÃO AQUI: Use o caminho do endpoint *sem* o context path (/api)
-            .requestMatchers("/login").permitAll() // ✅ Libera apenas /login
-            // .requestMatchers("/users").permitAll()
-            // Se a regra anterior falhar, você também pode tentar liberar *tudo* sob /api/login:
-            // .requestMatchers("/api/login").permitAll() // MANTENHA se remover o context-path
-
-            .anyRequest().authenticated().and().sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sem sessão
-            .and().addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class); // filtro JWT
+        configureStatelessnessAndCsrf(http);
+        configureAuthorization(http);
+        addJwtFilter(http);
 
         return http.build();
     }
 
+    /**
+     * Bean para codificar senhas com BCrypt.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Bean do filtro JWT — facilita o mock e a injeção em testes.
+     */
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+        return new JwtAuthenticationFilter(jwtTokenProvider);
+    }
+
+    private void configureStatelessnessAndCsrf(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    }
+
+    private void configureAuthorization(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login").permitAll()
+            .anyRequest().authenticated()
+        );
+    }
+
+    private void addJwtFilter(HttpSecurity http) throws Exception {
+        http.addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider),
+            UsernamePasswordAuthenticationFilter.class);
     }
 }

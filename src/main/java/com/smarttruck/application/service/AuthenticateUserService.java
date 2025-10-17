@@ -14,11 +14,8 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticateUserService(
-        UserRepository userRepository,
-        PasswordEncoder passwordEncoder,
-        JwtTokenProvider jwtTokenProvider
-    ) {
+    public AuthenticateUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                                   JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
