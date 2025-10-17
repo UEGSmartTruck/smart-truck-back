@@ -6,6 +6,8 @@ import com.smarttruck.domain.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Repository
 public class JpaUserRepository implements UserRepository {
@@ -33,5 +35,11 @@ public class JpaUserRepository implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return springRepo.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return springRepo.findByEmail(email)
+            .map(mapper::toDomain);
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * {@link CreateTicketRequest}
  */
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/tickets")
 public class TicketController {
 
     private final CreateTicketUseCase createTicketUseCase;
