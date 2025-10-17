@@ -32,8 +32,8 @@ public class UserController {
     public ResponseEntity<CreateUserResponse> create(
         @Valid @RequestBody CreateUserRequest request) {
         var user =
-            createUserUseCase.execute(request.getName(), request.getEmail(), request.getPassword(),
-                request.getPhone());
+            createUserUseCase.execute(request.name(), request.email(), request.password(),
+                request.phone());
 
         if (user == null) {
             return ResponseEntity.badRequest().build();

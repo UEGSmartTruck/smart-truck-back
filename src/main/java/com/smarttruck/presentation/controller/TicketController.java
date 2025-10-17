@@ -38,8 +38,8 @@ public class TicketController {
     @PostMapping
     public ResponseEntity<CreateTicketResponse> create(
         @Valid @RequestBody CreateTicketRequest request) {
-        boolean aiSolved = request.getAiSolved() != null ? request.getAiSolved() : false;
-        var ticket = createTicketUseCase.execute(request.getCustomerId(), request.getDescription(),
+        boolean aiSolved = request.aiSolved() != null ? request.aiSolved() : false;
+        var ticket = createTicketUseCase.execute(request.customerId(), request.description(),
             aiSolved);
 
         if (ticket == null) {
