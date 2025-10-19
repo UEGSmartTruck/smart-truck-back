@@ -68,6 +68,8 @@ buildNumber.properties
 .env
 .env.local
 .env.*.local
+application-dev.yml
+application-prod.yml
 
 # Arquivos temporários de sistema
 .DS_Store

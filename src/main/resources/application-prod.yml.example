@@ -1,0 +1,37 @@
+
+# Exemplo de configuração para ambiente de produção
+spring:
+  datasource:
+  url: jdbc:postgresql://localhost:5433/smarttruck_db
+  username: SEU_USUARIO_AQUI
+  password: SUA_SENHA_AQUI
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+bot:
+  telegram:
+  username: SEU_TELEGRAM_BOT_USERNAME
+  token: SEU_TELEGRAM_BOT_TOKEN
+  whatsapp:
+  verify-token: SEU_WHATSAPP_VERIFY_TOKEN
+  access-token: SEU_WHATSAPP_ACCESS_TOKEN
+  app-secret: SEU_WHATSAPP_APP_SECRET
+cache:
+  ttl: 3600
+  max-size: 1000
+ticket:
+  sla: 14400
+  auto-close: 172800
+logging:
+  level:
+    com.smarttruck: INFO
+    org.springframework.web: DEBUG
+    org.springframework: WARN
+    liquibase: INFO
