@@ -178,3 +178,37 @@ curl -v -X POST http://localhost:8080/api/login   -H "Content-Type: application/
 - [Arquitetura Limpa](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [API do Telegram](https://core.telegram.org/bots/api)
 - [API do WhatsApp](https://developers.facebook.com/docs/whatsapp/api/overview)
+
+---
+
+## 🔐 Configurando o segredo do JWT (JWT_SECRET)
+
+O sistema usa a propriedade `jwt.secret` para assinar tokens JWT. Em ambientes diferentes (desenvolvimento, CI, produção) você deve sempre fornecer uma secret segura e estável. NÃO comite segredos reais no repositório.
+
+Boas práticas:
+
+- Em produção, armazene a secret em um gerenciador de segredos (Azure Key Vault, AWS Secrets Manager, HashiCorp Vault) ou nas variáveis de ambiente do provedor de infraestrutura.
+- Em desenvolvimento local, utilize um arquivo `.env` (ignorá-lo no .gitignore) ou defina a variável de ambiente localmente.
+- Prefira uma chave com entropia adequada (ex.: 256 bits) e, quando possível, considere usar algoritmos assimétricos (RS256/ES256) com pares de chaves e KMS para rotação.
+
+Exemplos de uso (temporário na sessão atual):
+
+Linux / Git Bash / WSL:
+
+```bash
+export JWT_SECRET="sua_chave_secreta_com_muita_entropia"
+mvn -Dspring.profiles.active=dev spring-boot:run
+```
+
+Windows PowerShell:
+
+```powershell
+$env:JWT_SECRET = 'sua_chave_secreta_com_muita_entropia'
+mvn -Dspring.profiles.active=dev spring-boot:run
+```
+
+Observações:
+
+- O repositório inclui um arquivo de exemplo `src/main/resources/application-dev.yml.example` com um placeholder `jwt.secret: "DEV_EXAMPLE_JWT_SECRET_CHANGE_ME"` apenas para referência. Substitua esse valor por uma secret real via variável de ambiente `JWT_SECRET` ou remova o valor antes de compartilhar o arquivo.
+- Se `jwt.secret` não estiver definido, a aplicação gera uma chave temporária em tempo de execução (útil para testes locais), mas isso faz com que tokens gerados por uma instância não sejam válidos em outra. Portanto, sempre forneça uma secret consistente em ambientes com múltiplas instâncias.
+

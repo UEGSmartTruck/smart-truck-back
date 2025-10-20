@@ -2,17 +2,22 @@ package com.smarttruck.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smarttruck.presentation.dto.ErrorResponse;
 import com.smarttruck.shared.security.JwtAuthenticationFilter;
 import com.smarttruck.shared.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class SecurityConfig {
@@ -23,6 +28,17 @@ public class SecurityConfig {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            final ErrorResponse error =
+                    new ErrorResponse("Acesso não autorizado. Faça login para continuar.");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(error));
+        };
+    }
+
     /**
      * Define a configuração principal de segurança da aplicação.
      */
@@ -31,7 +47,7 @@ public class SecurityConfig {
         configureStatelessnessAndCsrf(http);
         configureAuthorization(http);
         addJwtFilter(http);
-
+        http.exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint()));
         return http.build();
     }
 
@@ -61,7 +77,7 @@ public class SecurityConfig {
 
     private void configureAuthorization(final HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-                auth -> auth.requestMatchers("/login").permitAll().anyRequest().authenticated());
+                auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated());
     }
 
     private void addJwtFilter(final HttpSecurity http) throws Exception {

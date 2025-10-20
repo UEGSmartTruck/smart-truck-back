@@ -6,9 +6,9 @@ spring:
     # BANCO DE DADOS
     # ============================
     datasource:
-        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/smarttruck_db}
-        username: ${SPRING_DATASOURCE_USERNAME:postgres}
-        password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/smarttruck_db}
+        username: ${SPRING_DATASOURCE_USERNAME:SEU_USUARIO_AQUI}
+        password: ${SPRING_DATASOURCE_PASSWORD:SUA_SENHA_AQUI}
         driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
 
     jpa:
@@ -52,38 +52,37 @@ server:
     servlet:
         context-path: ${SERVER_CONTEXT_PATH:/api}
 
-# ============================
-# CONFIGURAÇÕES DE BOTS
-# ============================
-bot:
-    telegram:
-        username: ${TELEGRAM_BOT_USERNAME}
-        token: ${TELEGRAM_BOT_TOKEN}
-    whatsapp:
-        verify-token: ${WHATSAPP_VERIFY_TOKEN}
-        access-token: ${WHATSAPP_ACCESS_TOKEN}
-        app-secret: ${WHATSAPP_APP_SECRET}
 
 # ============================
-# CACHE
+# PROPRIEDADES CUSTOMIZADAS (use @Value ou @ConfigurationProperties)
 # ============================
-cache:
-    ttl: ${CACHE_TTL:3600} # Tempo de vida em segundos
-    max-size: ${CACHE_MAX_SIZE:1000} # Máximo de entradas no cache
-
-# ============================
-# SISTEMA DE TICKETS
-# ============================
-ticket:
-    sla: ${TICKET_SLA:14400} # SLA (4h)
-    auto-close: ${TICKET_AUTO_CLOSE:172800} # Auto-fechamento (48h)
+# bot:
+#   telegram:
+#     username: ${TELEGRAM_BOT_USERNAME:SEU_TELEGRAM_BOT_USERNAME}
+#     token: ${TELEGRAM_BOT_TOKEN:SEU_TELEGRAM_BOT_TOKEN}
+#   whatsapp:
+#     verify-token: ${WHATSAPP_VERIFY_TOKEN:SEU_WHATSAPP_VERIFY_TOKEN}
+#     access-token: ${WHATSAPP_ACCESS_TOKEN:SEU_WHATSAPP_ACCESS_TOKEN}
+#     app-secret: ${WHATSAPP_APP_SECRET:SEU_WHATSAPP_APP_SECRET}
+# cache:
+#   ttl: ${CACHE_TTL:3600} # Tempo de vida em segundos
+#   max-size: ${CACHE_MAX_SIZE:1000} # Máximo de entradas no cache
+# ticket:
+#   sla: ${TICKET_SLA:14400} # SLA (4h)
+#   auto-close: ${TICKET_AUTO_CLOSE:172800} # Auto-fechamento (48h)
 
 # ============================
 # LOGGING
 # ============================
-logging:
-    level:
-        com.smarttruck: ${LOG_LEVEL_SMARTTRUCK:INFO}
-        org.springframework.web: DEBUG
-        org.springframework: ${LOG_LEVEL_SPRING:WARN}
-        liquibase: ${LOG_LEVEL_LIQUIBASE:INFO}
+
+'logging.level.com.smarttruck': ${LOG_LEVEL_SMARTTRUCK:INFO}
+'logging.level.org.springframework.web': DEBUG
+'logging.level.org.springframework': ${LOG_LEVEL_SPRING:WARN}
+'logging.level.liquibase': ${LOG_LEVEL_FLYWAY:INFO}
+
+# ============================
+# JWT
+# ============================
+jwt:
+    secret: ${JWT_SECRET:}
+
