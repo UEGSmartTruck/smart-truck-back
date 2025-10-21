@@ -77,7 +77,13 @@ public class SecurityConfig {
 
     private void configureAuthorization(final HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-                auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated());
+                auth -> auth
+                    .requestMatchers("/auth/**")
+                    .permitAll()
+                    .requestMatchers("/users")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
     }
 
     private void addJwtFilter(final HttpSecurity http) throws Exception {
