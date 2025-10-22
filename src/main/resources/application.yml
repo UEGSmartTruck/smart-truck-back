@@ -47,6 +47,15 @@ spring:
             max-file-size: 10MB
             max-request-size: 10MB
 
+    profiles:
+        active: dev
+
+    http:
+        encoding:
+            enabled: true
+            charset: UTF-8
+            force: true
+
 server:
     port: ${SERVER_PORT:8080}
     servlet:
