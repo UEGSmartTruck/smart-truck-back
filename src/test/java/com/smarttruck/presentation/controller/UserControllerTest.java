@@ -1,6 +1,7 @@
 package com.smarttruck.presentation.controller;
 
 import com.smarttruck.application.usecase.CreateUserUseCase;
+import com.smarttruck.application.usecase.ListAllUsersUseCase;
 import com.smarttruck.domain.model.User;
 import com.smarttruck.presentation.dto.CreateUserRequest;
 import com.smarttruck.presentation.dto.CreateUserResponse;
@@ -15,12 +16,14 @@ import static org.mockito.Mockito.*;
 class UserControllerTest {
 
     private CreateUserUseCase createUserUseCase;
+    private ListAllUsersUseCase listaAllUsersUseCase;
     private UserController userController;
 
     @BeforeEach
     void setUp() {
         createUserUseCase = mock(CreateUserUseCase.class);
-        userController = new UserController(createUserUseCase);
+        ListAllUsersUseCase listaAllUsersUseCase = mock(ListAllUsersUseCase.class);
+        userController = new UserController(createUserUseCase, listaAllUsersUseCase);
     }
 
     @Test
