@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*; // 3. Importar GetMapping
 import java.util.List; // 4. Importar List
 
 @RestController
-@RequestMapping("/users") // O caminho base é /users
+@RequestMapping("/auth/users") // O caminho base é /users
 @Validated
 public class UserController {
 
