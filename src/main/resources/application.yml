@@ -7,8 +7,8 @@ spring:
     # ============================
     datasource:
         url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/smarttruck_db}
-        username: ${SPRING_DATASOURCE_USERNAME:SEU_USUARIO_AQUI}
-        password: ${SPRING_DATASOURCE_PASSWORD:SUA_SENHA_AQUI}
+        username: ${SPRING_DATASOURCE_USERNAME:postgres}
+        password: ${SPRING_DATASOURCE_PASSWORD:postgres}
         driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
 
     jpa:
@@ -46,6 +46,15 @@ spring:
         multipart:
             max-file-size: 10MB
             max-request-size: 10MB
+
+    profiles:
+        active: dev
+
+    http:
+        encoding:
+            enabled: true
+            charset: UTF-8
+            force: true
 
 server:
     port: ${SERVER_PORT:8080}

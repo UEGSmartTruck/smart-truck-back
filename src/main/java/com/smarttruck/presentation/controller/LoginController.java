@@ -1,18 +1,18 @@
-
 package com.smarttruck.presentation.controller;
 
+import com.smarttruck.application.usecase.AuthenticateUserUseCase;
+import com.smarttruck.application.usecase.RefreshTokenUseCase;
+import com.smarttruck.domain.repository.RefreshTokenRepository;
+import com.smarttruck.presentation.dto.*;
+import com.smarttruck.presentation.mapper.RefreshTokenMapper;
+import com.smarttruck.shared.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.smarttruck.application.usecase.AuthenticateUserUseCase;
-import com.smarttruck.presentation.dto.ErrorResponse;
-import com.smarttruck.presentation.dto.LoginRequest;
-import com.smarttruck.presentation.dto.MessageResponse;
-import com.smarttruck.presentation.dto.TokenResponse;
-import com.smarttruck.shared.security.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,23 +20,47 @@ public class LoginController {
 
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenUseCase refreshTokenUseCase;
 
     public LoginController(final AuthenticateUserUseCase authenticateUserUseCase,
-            final JwtTokenProvider jwtTokenProvider) {
+                           final JwtTokenProvider jwtTokenProvider,
+                           final RefreshTokenRepository refreshTokenRepository,
+                           final RefreshTokenUseCase refreshTokenUseCase) {
         this.authenticateUserUseCase = authenticateUserUseCase;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenUseCase = refreshTokenUseCase;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody final LoginRequest request) {
         try {
             final String accessToken =
-                    authenticateUserUseCase.execute(request.email(), request.password());
-            return ResponseEntity.ok(new TokenResponse(accessToken,
-                    JwtTokenProvider.ACCESS_TOKEN_VALIDITY_IN_MS / 1000));
+                authenticateUserUseCase.execute(request.email(), request.password());
+
+            // generate refresh token and persist mapping userId
+            final String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
+            final String refreshToken = java.util.UUID.randomUUID().toString();
+            refreshTokenRepository.save(refreshToken, userId);
+
+            return ResponseEntity.ok(new RefreshTokenResponse(accessToken, refreshToken));
         } catch (final RuntimeException e) {
             // Usuário não encontrado ou senha inválida
-            return ResponseEntity.status(401).body(new ErrorResponse("Usuário ou senha inválidos"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("Usuário ou senha inválidos"));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(
+        @RequestBody final RefreshTokenRequest request) {
+        try {
+            final var token = refreshTokenUseCase.refresh(request.refreshToken());
+            final var response = RefreshTokenMapper.toResponse(token);
+            return ResponseEntity.ok(response);
+        } catch (final Exception e) {
+            return ResponseEntity.status(401).build();
         }
     }
 
@@ -48,7 +72,7 @@ public class LoginController {
             return ResponseEntity.ok().body(new MessageResponse("Logout realizado com sucesso"));
         }
         return ResponseEntity.status(401)
-                .body(new ErrorResponse("Token de sessão expirado ou inválido"));
+            .body(new ErrorResponse("Token de sessão expirado ou inválido"));
     }
 
     private String extractToken(final HttpServletRequest request) {

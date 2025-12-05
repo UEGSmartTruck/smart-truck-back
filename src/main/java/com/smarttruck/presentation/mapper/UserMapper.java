@@ -12,16 +12,10 @@ public class UserMapper {
     private UserMapper() {
     }
 
-    public static CreateUserResponse toResponse(User user) {
-        CreateUserResponse r = new CreateUserResponse();
-        r.setId(user.getId());
-        r.setName(user.getName());
-        r.setEmail(user.getEmail());
-        r.setPhone(user.getPhone());
-        r.setCreatedAt(user.getCreatedAt());
-        r.setUpdatedAt(user.getUpdatedAt());
-        r.setDeletedAt(user.getDeletedAt());
-        r.setLoginAt(user.getLoginAt());
+    public static CreateUserResponse toResponse(final User user) {
+        final CreateUserResponse r =
+            new CreateUserResponse(user.getId(), user.getName(), user.getEmail(), user.getPhone(),
+                user.getCreatedAt(), user.getUpdatedAt(), user.getDeletedAt(), user.getLoginAt());
         return r;
     }
 }
