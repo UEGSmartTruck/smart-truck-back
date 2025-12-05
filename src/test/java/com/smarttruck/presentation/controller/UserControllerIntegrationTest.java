@@ -114,7 +114,7 @@ class UserControllerIntegrationTest {
         User user3 = new User("3", "Charlie", "333", "charlie@example.com", "pass", now, now, null, now);
 
         Page<User> page = new PageImpl<>(Arrays.asList(user1, user2, user3), PageRequest.of(0, 20), 3);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(page);
 
         // Act & Assert
@@ -138,7 +138,7 @@ class UserControllerIntegrationTest {
     void shouldReturnEmptyListWhenNoUsers() throws Exception {
         // Arrange
         Page<User> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 20), 0);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(emptyPage);
 
         // Act & Assert
@@ -159,7 +159,7 @@ class UserControllerIntegrationTest {
         // 1. Enable filters
         // 2. Not provide Authorization header
         // 3. Expect 401 Unauthorized
-        
+
         // This is a placeholder test to document the requirement
         // The actual authentication check is done by Spring Security filters
     }
@@ -173,7 +173,7 @@ class UserControllerIntegrationTest {
         // Deleted user (deletedAt != null) should NOT be in the result
 
         Page<User> page = new PageImpl<>(Arrays.asList(activeUser1, activeUser2), PageRequest.of(0, 20), 2);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(page);
 
         // Act & Assert
@@ -191,7 +191,7 @@ class UserControllerIntegrationTest {
     void shouldReturnEmptyWhenAllDeleted() throws Exception {
         // Arrange - All users are deleted
         Page<User> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 20), 0);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(emptyPage);
 
         // Act & Assert
@@ -214,7 +214,7 @@ class UserControllerIntegrationTest {
         }
 
         Page<User> page = new PageImpl<>(Arrays.asList(users), PageRequest.of(0, 10), 50);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(page);
 
         // Act & Assert
@@ -241,7 +241,7 @@ class UserControllerIntegrationTest {
         }
 
         Page<User> page = new PageImpl<>(Arrays.asList(users), PageRequest.of(2, 10), 25);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(page);
 
         // Act & Assert
@@ -289,7 +289,7 @@ class UserControllerIntegrationTest {
         }
 
         Page<User> page = new PageImpl<>(Arrays.asList(users), PageRequest.of(0, 20), 100);
-        
+
         when(listAllUserUseCase.execute(any())).thenReturn(page);
 
         // Act & Assert - Call without params should use defaults
