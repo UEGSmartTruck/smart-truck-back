@@ -6,9 +6,7 @@ import com.smarttruck.shared.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,13 +32,12 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatusCode.valueOf(HttpServletResponse.SC_UNAUTHORIZED),
-                "Acesso não autorizado. Faça login para continuar.");
-
-            String json = new ObjectMapper().writeValueAsString(problemDetail);
-            response.getWriter().write(json);
+            final com.smarttruck.presentation.dto.ErrorResponse error = new com.smarttruck.presentation.dto.ErrorResponse(
+                "Acesso não autorizado. Faça login para continuar.",
+                java.time.Instant.now(),
+                new com.smarttruck.presentation.dto.ErrorResponse.ErrorDetails("UNAUTHORIZED", "Authentication required")
+            );
+            response.getWriter().write(new ObjectMapper().writeValueAsString(error));
         };
     }
 

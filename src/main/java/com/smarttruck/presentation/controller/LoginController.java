@@ -7,7 +7,6 @@ import com.smarttruck.presentation.dto.*;
 import com.smarttruck.presentation.mapper.RefreshTokenMapper;
 import com.smarttruck.shared.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,8 +46,11 @@ public class LoginController {
             return ResponseEntity.ok(new RefreshTokenResponse(accessToken, refreshToken));
         } catch (final RuntimeException e) {
             // Usuário não encontrado ou senha inválida
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("Usuário ou senha inválidos"));
+            return ResponseEntity.status(401).body(new ErrorResponse(
+                "Usuário ou senha inválidos",
+                java.time.Instant.now(),
+                new ErrorResponse.ErrorDetails("AUTH_FAILED", "Invalid credentials")
+            ));
         }
     }
 
@@ -71,8 +73,11 @@ public class LoginController {
             jwtTokenProvider.invalidateToken(token);
             return ResponseEntity.ok().body(new MessageResponse("Logout realizado com sucesso"));
         }
-        return ResponseEntity.status(401)
-            .body(new ErrorResponse("Token de sessão expirado ou inválido"));
+        return ResponseEntity.status(401).body(new ErrorResponse(
+            "Token de sessão expirado ou inválido",
+            java.time.Instant.now(),
+            new ErrorResponse.ErrorDetails("TOKEN_INVALID", "Token expired or invalid")
+        ));
     }
 
     private String extractToken(final HttpServletRequest request) {
