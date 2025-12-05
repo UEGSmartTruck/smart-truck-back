@@ -1,12 +1,13 @@
 package com.smarttruck.presentation.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.smarttruck.application.usecase.RefreshTokenUseCase;
+import com.smarttruck.domain.repository.RefreshTokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import com.smarttruck.application.usecase.AuthenticateUserUseCase;
 import com.smarttruck.presentation.dto.ErrorResponse;
 import com.smarttruck.presentation.dto.LoginRequest;
 import com.smarttruck.presentation.dto.MessageResponse;
-import com.smarttruck.presentation.dto.TokenResponse;
 import com.smarttruck.shared.security.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,13 +28,20 @@ class LoginControllerTest {
     private AuthenticateUserUseCase authenticateUserUseCase;
 
     @Mock
+    private RefreshTokenUseCase refreshTokenUseCase;
+
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
 
     private LoginController loginController;
 
     @BeforeEach
     void setUp() {
-        loginController = new LoginController(authenticateUserUseCase, jwtTokenProvider);
+        loginController = new LoginController(authenticateUserUseCase, jwtTokenProvider,
+                refreshTokenRepository, refreshTokenUseCase);
     }
 
     @Test
@@ -46,6 +53,7 @@ class LoginControllerTest {
         final LoginRequest request = new LoginRequest(email, password);
 
         when(authenticateUserUseCase.execute(email, password)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromToken(token)).thenReturn("user-1");
 
         // Act
         final ResponseEntity<?> response = loginController.login(request);
@@ -54,10 +62,12 @@ class LoginControllerTest {
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
-        assertTrue(response.getBody() instanceof TokenResponse);
-        assertEquals(token, ((TokenResponse) response.getBody()).accessToken());
-        assertEquals(JwtTokenProvider.ACCESS_TOKEN_VALIDITY_IN_MS / 1000,
-                ((TokenResponse) response.getBody()).expiresIn());
+        assertInstanceOf(com.smarttruck.presentation.dto.RefreshTokenResponse.class,
+            response.getBody());
+        final var body = (com.smarttruck.presentation.dto.RefreshTokenResponse) response.getBody();
+        assertEquals(token, body.accessToken());
+        assertNotNull(body.refreshToken());
+        verify(refreshTokenRepository).save(body.refreshToken(), "user-1");
 
         verify(authenticateUserUseCase).execute(email, password);
     }

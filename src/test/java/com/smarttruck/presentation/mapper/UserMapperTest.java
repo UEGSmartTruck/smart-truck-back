@@ -1,67 +1,67 @@
 package com.smarttruck.presentation.mapper;
 
-import com.smarttruck.domain.model.User;
-import com.smarttruck.presentation.dto.CreateUserResponse;
-import com.smarttruck.presentation.dto.ListAllUserResponse;
-import com.smarttruck.presentation.dto.UserData;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import com.smarttruck.domain.model.User;
+import com.smarttruck.presentation.dto.CreateUserResponse;
+import com.smarttruck.presentation.dto.ListAllUserResponse;
+import com.smarttruck.presentation.dto.UserData;
 
 class UserMapperTest {
 
     @Test
     void toResponse_shouldMapAllFields() {
         // Arrange
-        Instant now = Instant.now();
-        User user =
-            new User("123", "Alice", "1234567890", "alice@example.com", "hashedPass", now, now, now,
-                now);
+        final Instant now = Instant.now();
+        final User user = new User("123", "Alice", "1234567890", "alice@example.com", "hashedPass", now,
+                now, now, now);
 
         // Act
-        CreateUserResponse response = UserMapper.toResponse(user);
+        final CreateUserResponse response = UserMapper.toResponse(user);
 
         // Assert
-        assertEquals(user.getId(), response.getId());
-        assertEquals(user.getName(), response.getName());
-        assertEquals(user.getEmail(), response.getEmail());
-        assertEquals(user.getPhone(), response.getPhone());
-        assertEquals(user.getCreatedAt(), response.getCreatedAt());
-        assertEquals(user.getUpdatedAt(), response.getUpdatedAt());
-        assertEquals(user.getDeletedAt(), response.getDeletedAt());
-        assertEquals(user.getLoginAt(), response.getLoginAt());
+        assertEquals(user.getId(), response.id());
+        assertEquals(user.getName(), response.name());
+        assertEquals(user.getEmail(), response.email());
+        assertEquals(user.getPhone(), response.phone());
+        assertEquals(user.getCreatedAt(), response.createdAt());
+        assertEquals(user.getUpdatedAt(), response.updatedAt());
+        assertEquals(user.getDeletedAt(), response.deletedAt());
+        assertEquals(user.getLoginAt(), response.loginAt());
     }
 
     @Test
     void toResponse_shouldHandleNullOptionalFields() {
         // Arrange
-        Instant now = Instant.now();
-        User user =
-            new User("123", "Bob", "0987654321", "bob@example.com", "hashedPass", now, now, null,
+        final Instant now = Instant.now();
+        final User user = new User("123", "Bob", "0987654321", "bob@example.com", "hashedPass", now, now,
+                null,
                 // deletedAt
-                null  // loginAt
-            );
+                null // loginAt
+        );
 
         // Act
-        CreateUserResponse response = UserMapper.toResponse(user);
+        final CreateUserResponse response = UserMapper.toResponse(user);
 
         // Assert
-        assertEquals(user.getId(), response.getId());
-        assertEquals(user.getName(), response.getName());
-        assertEquals(user.getEmail(), response.getEmail());
-        assertEquals(user.getPhone(), response.getPhone());
-        assertEquals(user.getCreatedAt(), response.getCreatedAt());
-        assertEquals(user.getUpdatedAt(), response.getUpdatedAt());
-        assertNull(response.getDeletedAt());
-        assertNull(response.getLoginAt());
+        assertEquals(user.getId(), response.id());
+        assertEquals(user.getName(), response.name());
+        assertEquals(user.getEmail(), response.email());
+        assertEquals(user.getPhone(), response.phone());
+        assertEquals(user.getCreatedAt(), response.createdAt());
+        assertEquals(user.getUpdatedAt(), response.updatedAt());
+        assertNull(response.deletedAt());
+        assertNull(response.loginAt());
     }
 
     @Test

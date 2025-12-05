@@ -1,21 +1,22 @@
 package com.smarttruck.presentation.controller;
 
-import com.smarttruck.application.usecase.CreateTicketUseCase;
-import com.smarttruck.domain.model.Ticket;
-import com.smarttruck.presentation.dto.CreateTicketRequest;
-import com.smarttruck.presentation.dto.CreateTicketResponse;
-import com.smarttruck.presentation.mapper.TicketMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.time.Instant;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import com.smarttruck.application.usecase.CreateTicketUseCase;
+import com.smarttruck.domain.model.Ticket;
+import com.smarttruck.domain.model.TicketStatus;
+import com.smarttruck.presentation.dto.CreateTicketRequest;
+import com.smarttruck.presentation.dto.CreateTicketResponse;
+import com.smarttruck.presentation.mapper.TicketMapper;
 
 class TicketControllerTest {
 
@@ -31,11 +32,13 @@ class TicketControllerTest {
     @Test
     void shouldCreateTicketSuccessfully_whenAiSolvedIsTrue() {
         // Arrange
-        CreateTicketRequest request = new CreateTicketRequest("123", "Motor issue", true);
+        final CreateTicketRequest request = new CreateTicketRequest("123", "Motor issue", true);
 
-        Ticket ticket = new Ticket("1", "123", "Motor issue", null, Instant.now(), null, null);
-        CreateTicketResponse expectedResponse =
-            new CreateTicketResponse("1", "123", "Motor issue", "CREATED", Instant.now());
+        final Instant now = Instant.now();
+        final Ticket ticket =
+                new Ticket("1", "123", "Motor issue", TicketStatus.OPEN, now, now, null);
+        final CreateTicketResponse expectedResponse =
+                new CreateTicketResponse("1", "123", "Motor issue", "OPEN", now, now, null);
 
         when(createTicketUseCase.execute("123", "Motor issue", true)).thenReturn(ticket);
 
@@ -43,7 +46,7 @@ class TicketControllerTest {
             mapperMock.when(() -> TicketMapper.toResponse(ticket)).thenReturn(expectedResponse);
 
             // Act
-            ResponseEntity<CreateTicketResponse> responseEntity = controller.create(request);
+            final ResponseEntity<CreateTicketResponse> responseEntity = controller.create(request);
 
             // Assert
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -55,11 +58,13 @@ class TicketControllerTest {
     @Test
     void shouldCreateTicketWithAiSolvedFalse_whenAiSolvedIsNull() {
         // Arrange — aiSolved = null (Jackson pode desserializar assim se campo vier ausente)
-        CreateTicketRequest request = new CreateTicketRequest("999", "Brake check", null);
+        final CreateTicketRequest request = new CreateTicketRequest("999", "Brake check", null);
 
-        Ticket ticket = new Ticket("2", "999", "Brake check", null, Instant.now(), null, null);
-        CreateTicketResponse expectedResponse =
-            new CreateTicketResponse("2", "999", "Brake check", "CREATED", Instant.now());
+        final Instant now = Instant.now();
+        final Ticket ticket =
+                new Ticket("2", "999", "Brake check", TicketStatus.OPEN, now, now, null);
+        final CreateTicketResponse expectedResponse =
+                new CreateTicketResponse("2", "999", "Brake check", "OPEN", now, now, null);
 
         when(createTicketUseCase.execute("999", "Brake check", false)).thenReturn(ticket);
 
@@ -67,7 +72,7 @@ class TicketControllerTest {
             mapperMock.when(() -> TicketMapper.toResponse(ticket)).thenReturn(expectedResponse);
 
             // Act
-            ResponseEntity<CreateTicketResponse> responseEntity = controller.create(request);
+            final ResponseEntity<CreateTicketResponse> responseEntity = controller.create(request);
 
             // Assert
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
