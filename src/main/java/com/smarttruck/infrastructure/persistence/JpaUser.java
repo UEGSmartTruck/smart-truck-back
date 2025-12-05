@@ -1,12 +1,11 @@
 package com.smarttruck.infrastructure.persistence;
 
+import java.time.Instant;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -23,10 +22,10 @@ public class JpaUser {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name="created_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at")
@@ -39,11 +38,11 @@ public class JpaUser {
     private Instant loginAt;
 
     // Constructors, getters and setters
-    public JpaUser() {
-    }
+    public JpaUser() {}
 
-    public JpaUser(String id, String name, String phone, String email, String passwordHash,
-                   Instant createdAt, Instant updatedAt, Instant deletedAt, Instant loginAt) {
+    public JpaUser(final String id, final String name, final String phone, final String email,
+            final String passwordHash, final Instant createdAt, final Instant updatedAt,
+            final Instant deletedAt, final Instant loginAt) {
         this.id = id == null ? UUID.randomUUID().toString() : id;
         this.name = name;
         this.phone = phone;
@@ -59,7 +58,7 @@ public class JpaUser {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -67,7 +66,7 @@ public class JpaUser {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -75,7 +74,7 @@ public class JpaUser {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(final String phone) {
         this.phone = phone;
     }
 
@@ -83,7 +82,7 @@ public class JpaUser {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -91,7 +90,7 @@ public class JpaUser {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public void setPasswordHash(final String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
@@ -99,7 +98,7 @@ public class JpaUser {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(final Instant createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -107,7 +106,7 @@ public class JpaUser {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(final Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -115,7 +114,7 @@ public class JpaUser {
         return deletedAt;
     }
 
-    public void setDeletedAt(Instant deletedAt) {
+    public void setDeletedAt(final Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
 
@@ -123,7 +122,7 @@ public class JpaUser {
         return loginAt;
     }
 
-    public void setLoginAt(Instant loginAt) {
+    public void setLoginAt(final Instant loginAt) {
         this.loginAt = loginAt;
     }
 }

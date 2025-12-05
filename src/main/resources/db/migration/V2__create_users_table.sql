@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
        name VARCHAR(255) NOT NULL,
        phone VARCHAR(11) NOT NULL,
        email VARCHAR(100) NOT NULL,
-       passwordHash VARCHAR(100) NOT NULL,
+       password_hash VARCHAR(100) NOT NULL,
        created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
        updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
        deleted_at TIMESTAMP WITHOUT TIME ZONE NULL,

@@ -61,12 +61,30 @@ class LoginControllerIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         // Assert
-        final TokenResponse response = objectMapper
-                .readValue(result.getResponse().getContentAsString(), TokenResponse.class);
+        final com.smarttruck.presentation.dto.RefreshTokenResponse response =
+                objectMapper.readValue(result.getResponse().getContentAsString(),
+                        com.smarttruck.presentation.dto.RefreshTokenResponse.class);
 
         assertNotNull(response.accessToken());
+        assertNotNull(response.refreshToken());
         assertTrue(jwtTokenProvider.validateToken(response.accessToken()));
         assertEquals(email, jwtTokenProvider.getEmailFromToken(response.accessToken()));
+
+        // Now call refresh endpoint
+        final var refreshReq =
+                new com.smarttruck.presentation.dto.RefreshTokenRequest(response.refreshToken());
+        final MvcResult refreshResult = mockMvc
+                .perform(post("/auth/refresh").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(refreshReq)))
+                .andExpect(status().isOk()).andReturn();
+
+        final com.smarttruck.presentation.dto.RefreshTokenResponse refreshed =
+                objectMapper.readValue(refreshResult.getResponse().getContentAsString(),
+                        com.smarttruck.presentation.dto.RefreshTokenResponse.class);
+
+        assertNotNull(refreshed.accessToken());
+        assertNotNull(refreshed.refreshToken());
+        assertTrue(jwtTokenProvider.validateToken(refreshed.accessToken()));
     }
 
     @Test

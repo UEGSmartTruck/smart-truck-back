@@ -166,6 +166,108 @@ mvn -Dflyway.url=jdbc:postgresql://localhost:5432/smarttruck_db -Dflyway.user=sm
 
 Isso permite aplicar as migrations diretamente no banco sem depender da inicialização automática do Flyway pelo Spring Boot.
 
+## 🔌 Endpoints da API
+
+### Autenticação
+
+#### POST /api/login
+Autentica um usuário e retorna um token JWT.
+
+**Request:**
+```bash
+curl -X POST http://localhost:8080/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@smarttruck.com","password":"LouvadoSejaDeus"}'
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresAt": "2025-12-04T23:00:00Z"
+}
+```
+
+**Response (401 Unauthorized):**
+```json
+{
+  "message": "Token de autenticação inválido ou expirado",
+  "timestamp": "2025-12-04T22:00:00Z",
+  "details": {
+    "code": "TOKEN_INVALID",
+    "additionalInfo": null
+  }
+}
+```
+
+### Gerenciamento de Usuários
+
+#### GET /users
+Lista usuários ativos com paginação. Requer autenticação via JWT.
+
+**Parâmetros de Query:**
+- `page` (opcional, default: 0): Número da página (mínimo: 0)
+- `size` (opcional, default: 20): Tamanho da página (mínimo: 1, máximo: 100)
+
+**Request:**
+```bash
+curl -X GET "http://localhost:8080/users?page=0&size=10" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT"
+```
+
+**Response (200 OK):**
+```json
+{
+  "users": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "João Silva",
+      "email": "joao@example.com",
+      "phone": "11999999999",
+      "createdAt": "2025-12-01T10:00:00Z",
+      "updatedAt": "2025-12-01T10:00:00Z",
+      "deletedAt": null,
+      "loginAt": "2025-12-04T22:00:00Z"
+    }
+  ],
+  "metadata": {
+    "totalElements": 50,
+    "totalPages": 5,
+    "currentPage": 0,
+    "pageSize": 10
+  }
+}
+```
+
+**Response (400 Bad Request)** - Parâmetros inválidos:
+```json
+{
+  "message": "Parâmetros de paginação inválidos",
+  "timestamp": "2025-12-04T22:00:00Z",
+  "details": {
+    "code": "INVALID_PARAMETER",
+    "additionalInfo": "findAll.size: must be less than or equal to 100"
+  }
+}
+```
+
+**Response (401 Unauthorized)** - Token ausente ou inválido:
+```json
+{
+  "message": "Token de autenticação inválido ou expirado",
+  "timestamp": "2025-12-04T22:00:00Z",
+  "details": {
+    "code": "TOKEN_INVALID",
+    "additionalInfo": null
+  }
+}
+```
+
+**Observações:**
+- Apenas usuários ativos (deletedAt = null) são retornados
+- Resultados ordenados por data de criação (mais recentes primeiro)
+- Paginação otimizada com índice parcial no banco de dados
+
 ## cURL para testar login válido
 curl -v -X POST http://localhost:8080/api/login   -H "Content-Type: application/json"   -d '{"email":"admin@smarttruck.com","password":"LouvadoSejaDeus"}'
 

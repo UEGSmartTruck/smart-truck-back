@@ -1,32 +1,39 @@
 package com.smarttruck.presentation.controller;
 
+
 import com.smarttruck.application.usecase.CreateUserUseCase;
-import com.smarttruck.application.usecase.ListAllUsersUseCase; // 1. Importar o novo UseCase
+import com.smarttruck.application.usecase.ListAllUserUseCase;
 import com.smarttruck.domain.model.User;
 import com.smarttruck.presentation.dto.CreateUserRequest;
 import com.smarttruck.presentation.dto.CreateUserResponse;
-import com.smarttruck.presentation.dto.UserResponse; // 2. Importar o DTO de resposta
+import com.smarttruck.presentation.dto.ListAllUserResponse;
 import com.smarttruck.presentation.mapper.UserMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*; // 3. Importar GetMapping
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List; // 4. Importar List
 
 @RestController
-@RequestMapping("/auth/users") // O caminho base é /users
+@RequestMapping("/users")
 @Validated
 public class UserController {
 
-    private final CreateUserUseCase createUserUseCase;
-    private final ListAllUsersUseCase listAllUsersUseCase; // 5. Injetar o novo UseCase
 
-    // 6. Atualizar o construtor
-    public UserController(CreateUserUseCase createUserUseCase, ListAllUsersUseCase listAllUsersUseCase) {
+    private final CreateUserUseCase createUserUseCase;
+    private final ListAllUserUseCase listAllUserUseCase;
+
+    public UserController(CreateUserUseCase createUserUseCase, ListAllUserUseCase listAllUserUseCase) {
         this.createUserUseCase = createUserUseCase;
-        this.listAllUsersUseCase = listAllUsersUseCase;
+        this.listAllUserUseCase = listAllUserUseCase;
     }
+
 
     @PostMapping
     public ResponseEntity<CreateUserResponse> create(
@@ -43,20 +50,21 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // 7. Adicionar o novo endpoint
     /**
-     * Endpoint para listar todos os usuários.
-     * Requer autenticação (definido no SecurityConfig).
+     * Lista usuários ativos com paginação.
+     *
+     * @param page número da página (default: 0, min: 0)
+     * @param size tamanho da página (default: 20, min: 1, max: 100)
+     * @return ResponseEntity com ListAllUserResponse contendo usuários e metadados de paginação
      */
     @GetMapping
-    public ResponseEntity<List<UserResponse>> listAll() {
-        // 1. Chama o caso de uso
-        List<User> users = listAllUsersUseCase.execute();
-
-        // 2. Mapeia a lista de domínio para a lista de DTO de resposta
-        List<UserResponse> response = UserMapper.toUserResponseList(users);
-
-        // 3. Retorna 200 OK com a lista no corpo
+    public ResponseEntity<ListAllUserResponse> findAll(
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<User> userPage = listAllUserUseCase.execute(pageable);
+        ListAllUserResponse response = UserMapper.toListAllResponse(userPage);
         return ResponseEntity.ok(response);
     }
 }

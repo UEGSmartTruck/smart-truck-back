@@ -1,5 +1,9 @@
 package com.smarttruck.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smarttruck.shared.security.JwtAuthenticationFilter;
+import com.smarttruck.shared.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -13,11 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smarttruck.presentation.dto.ErrorResponse;
-import com.smarttruck.shared.security.JwtAuthenticationFilter;
-import com.smarttruck.shared.security.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class SecurityConfig {
@@ -33,8 +32,11 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            final ErrorResponse error =
-                    new ErrorResponse("Acesso não autorizado. Faça login para continuar.");
+            final com.smarttruck.presentation.dto.ErrorResponse error = new com.smarttruck.presentation.dto.ErrorResponse(
+                "Acesso não autorizado. Faça login para continuar.",
+                java.time.Instant.now(),
+                new com.smarttruck.presentation.dto.ErrorResponse.ErrorDetails("UNAUTHORIZED", "Authentication required")
+            );
             response.getWriter().write(new ObjectMapper().writeValueAsString(error));
         };
     }
@@ -64,7 +66,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(
-            final JwtTokenProvider jwtTokenProvider) {
+        final JwtTokenProvider jwtTokenProvider) {
         return new JwtAuthenticationFilter(jwtTokenProvider);
     }
 
@@ -72,23 +74,17 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.setSharedObject(WebMvcConfigurer.class, corsConfigurationSource());
         http.sessionManagement(
-                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     }
 
     private void configureAuthorization(final HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-                auth -> auth
-                    .requestMatchers("/auth/**")
-                    .permitAll()
-                    .requestMatchers("/users")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated());
+            auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated());
     }
 
     private void addJwtFilter(final HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
+            UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -97,7 +93,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(final CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("*").allowedMethods("*")
-                        .allowedHeaders("*");
+                    .allowedHeaders("*");
             }
         };
     }
