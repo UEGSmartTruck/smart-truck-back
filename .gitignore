@@ -109,3 +109,6 @@ secrets/
 
 # VSCode Copilot
 .githubcopilot/
+.github/
+.specify/
+specs/

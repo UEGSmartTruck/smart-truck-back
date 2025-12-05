@@ -63,4 +63,49 @@ public class JwtTokenProvider {
     public void invalidateToken(final String token) {
         tokenBlacklist.addToBlacklist(token);
     }
+
+    /**
+     * Verifica se o token deve ser renovado (menos de 15 minutos para expirar).
+     *
+     * @param token JWT token a ser verificado
+     * @return true se o token deve ser renovado (remaining < 15 minutos), false caso contrário
+     */
+    public boolean shouldRefreshToken(final String token) {
+        try {
+            final Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+            final Date expiration = claims.getExpiration();
+            final long now = System.currentTimeMillis();
+            final long remaining = expiration.getTime() - now;
+
+            // 15 minutos = 900000 milliseconds
+            return remaining < 900000 && remaining > 0;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Gera um novo token com as mesmas claims do token original.
+     *
+     * @param token JWT token original a ser renovado
+     * @return novo JWT token com expiration atualizada
+     */
+    public String refreshToken(final String token) {
+        final Claims claims = Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+
+        final String userId = claims.getSubject();
+        final String email = claims.get("email", String.class);
+        final String name = claims.get("name", String.class);
+
+        return generateToken(userId, email, name);
+    }
 }

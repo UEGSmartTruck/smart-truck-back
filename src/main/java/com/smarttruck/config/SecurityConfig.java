@@ -33,8 +33,11 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            final ErrorResponse error =
-                    new ErrorResponse("Acesso não autorizado. Faça login para continuar.");
+            final ErrorResponse error = new ErrorResponse(
+                "Acesso não autorizado. Faça login para continuar.",
+                java.time.Instant.now(),
+                new ErrorResponse.ErrorDetails("UNAUTHORIZED", "Authentication required")
+            );
             response.getWriter().write(new ObjectMapper().writeValueAsString(error));
         };
     }

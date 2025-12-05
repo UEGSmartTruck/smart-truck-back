@@ -3,7 +3,7 @@ INSERT INTO users (
     name,
     phone,
     email,
-    passwordHash,
+    password_hash,
     created_at,
     updated_at
 ) VALUES (

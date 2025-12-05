@@ -3,9 +3,12 @@ package com.smarttruck.infrastructure.persistence;
 
 import com.smarttruck.domain.model.User;
 import com.smarttruck.domain.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -39,7 +42,16 @@ public class JpaUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return springRepo.findByEmail(email)
-            .map(mapper::toDomain);
+        return springRepo.findByEmail(email).map(mapper::toDomain);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return springRepo.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Page<User> findAllActive(Pageable pageable) {
+        return springRepo.findAllActive(pageable).map(mapper::toDomain);
     }
 }

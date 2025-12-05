@@ -38,6 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(userDetails, null, null);
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            // JWT Sliding Window: renovar token se restam menos de 15 minutos
+            if (tokenProvider.shouldRefreshToken(token)) {
+                final String newToken = tokenProvider.refreshToken(token);
+                response.addHeader("X-Refreshed-Token", newToken);
+                tokenProvider.invalidateToken(token); // Blacklist do token antigo
+            }
         }
 
         filterChain.doFilter(request, response);
