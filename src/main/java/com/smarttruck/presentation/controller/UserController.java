@@ -48,23 +48,8 @@ public class UserController {
 
         CreateUserResponse response = UserMapper.toResponse(user);
         return ResponseEntity.ok(response);
-
     }
-    /*
-    @PutMapping("/{id}")
-    public ResponseEntity<CreateUserResponse> update(
-        @PathVariable UUID id,
-        @Valid @RequestBody UpdateUserRequest request) {
 
-        // Chama o caso de uso para atualizar
-        User updatedUser = updateUserUseCase.execute(
-            id,
-            request.name(),
-            request.email(),
-            request.phone()
-        );
-
-         */
     /**
      * Lista usuários ativos com paginação.
      *
