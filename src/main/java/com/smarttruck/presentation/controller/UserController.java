@@ -3,10 +3,12 @@ package com.smarttruck.presentation.controller;
 
 import com.smarttruck.application.usecase.CreateUserUseCase;
 import com.smarttruck.application.usecase.ListAllUserUseCase;
+import com.smarttruck.application.usecase.UpdateUserUseCase;
 import com.smarttruck.domain.model.User;
 import com.smarttruck.presentation.dto.CreateUserRequest;
 import com.smarttruck.presentation.dto.CreateUserResponse;
 import com.smarttruck.presentation.dto.ListAllUserResponse;
+import com.smarttruck.presentation.dto.UpdateUserRequest;
 import com.smarttruck.presentation.mapper.UserMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -19,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/users")
@@ -28,10 +32,11 @@ public class UserController {
 
     private final CreateUserUseCase createUserUseCase;
     private final ListAllUserUseCase listAllUserUseCase;
-
-    public UserController(CreateUserUseCase createUserUseCase, ListAllUserUseCase listAllUserUseCase) {
+    private final UpdateUserUseCase updateUserUseCase;
+    public UserController(CreateUserUseCase createUserUseCase, ListAllUserUseCase listAllUserUseCase, UpdateUserUseCase updateUserUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.listAllUserUseCase = listAllUserUseCase;
+        this.updateUserUseCase = updateUserUseCase;
     }
 
 
@@ -67,4 +72,29 @@ public class UserController {
         ListAllUserResponse response = UserMapper.toListAllResponse(userPage);
         return ResponseEntity.ok(response);
     }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CreateUserResponse> update(
+        @PathVariable UUID id,
+        @Valid @RequestBody UpdateUserRequest request) {
+
+        // Executa a atualização (Nome, Email, Telefone)
+        // O ID vem da URL e os dados vêm do corpo da requisição (JSON do Angular)
+        var updatedUser = updateUserUseCase.execute(
+            id,
+            request.name(),
+            request.email(),
+            request.phone()
+        );
+
+        if (updatedUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Retornamos os dados atualizados para o Front atualizar a lista
+        CreateUserResponse response = UserMapper.toResponse(updatedUser);
+        return ResponseEntity.ok(response);
+    }
 }
+

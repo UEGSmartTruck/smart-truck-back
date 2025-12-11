@@ -33,7 +33,10 @@ public class JpaUserRepository implements UserRepository {
         JpaUser saved = springRepo.save(entity);
         return mapper.toDomain(saved);
     }
-
+    @Override
+    public Optional<User> findById(String id) {
+        return springRepo.findById(id).map(mapper::toDomain);
+    }
 
     @Override
     public boolean existsByEmail(String email) {

@@ -12,6 +12,11 @@ public interface UserRepository {
 
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
+
+    // --- NOVO MeTODO NECESSÁRIO PARA O PUT ---
+    Optional<User> findById(String id);
+    // -----------------------------------------
+
     List<User> findAll();
 
     /**

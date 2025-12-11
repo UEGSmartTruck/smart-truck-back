@@ -5,14 +5,15 @@ import java.util.UUID;
 
 public class User {
     private final String id;
-    private final String name;
-    private final String email;
-    private final String passwordHash;
-    private final String phone;
     private final Instant createdAt;
-    private final Instant updatedAt;
-    private final Instant deletedAt;
-    private final Instant loginAt;
+
+    private String email;
+    private  String name;
+    private  String passwordHash;
+    private  String phone;
+    private  Instant updatedAt;
+    private  Instant deletedAt;
+    private  Instant loginAt;
 
     public User(String name, String phone, String email, String passwordHash) {
         this.id = UUID.randomUUID().toString();
@@ -73,5 +74,21 @@ public class User {
 
     public Instant getLoginAt() {
         return loginAt;
+    }
+
+//setters
+public void setName(String name) {
+    this.name = name;
+    this.updatedAt = Instant.now(); // Atualiza data de modificação automaticamente
+}
+
+    public void setEmail(String email) {
+        this.email = email;
+        this.updatedAt = Instant.now();
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+        this.updatedAt = Instant.now();
     }
 }
