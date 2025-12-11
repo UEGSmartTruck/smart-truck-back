@@ -76,11 +76,11 @@ public class User {
         return loginAt;
     }
 
-//setters
-public void setName(String name) {
-    this.name = name;
-    this.updatedAt = Instant.now(); // Atualiza data de modificação automaticamente
-}
+    //setters
+    public void setName(String name) {
+        this.name = name;
+        this.updatedAt = Instant.now(); // Atualiza data de modificação automaticamente
+    }
 
     public void setEmail(String email) {
         this.email = email;
@@ -91,4 +91,17 @@ public void setName(String name) {
         this.phone = phone;
         this.updatedAt = Instant.now();
     }
+
+    public void setDeletedAt(Instant deletedAt)
+    {
+        this.deletedAt = deletedAt;
+        this.updatedAt = Instant.now();
+    }
+
+    public void setLoginAt(Instant loginAt)
+    {
+        this.loginAt = loginAt;
+        this.updatedAt = Instant.now();
+    }
+
 }

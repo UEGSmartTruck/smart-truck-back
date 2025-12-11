@@ -2,6 +2,7 @@ package com.smarttruck.presentation.controller;
 
 
 import com.smarttruck.application.usecase.CreateUserUseCase;
+import com.smarttruck.application.usecase.DeleteUserUseCase;
 import com.smarttruck.application.usecase.ListAllUserUseCase;
 import com.smarttruck.application.usecase.UpdateUserUseCase;
 import com.smarttruck.domain.model.User;
@@ -33,10 +34,12 @@ public class UserController {
     private final CreateUserUseCase createUserUseCase;
     private final ListAllUserUseCase listAllUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
-    public UserController(CreateUserUseCase createUserUseCase, ListAllUserUseCase listAllUserUseCase, UpdateUserUseCase updateUserUseCase) {
+    private final DeleteUserUseCase deleteUserUseCase;
+    public UserController(CreateUserUseCase createUserUseCase, ListAllUserUseCase listAllUserUseCase, UpdateUserUseCase updateUserUseCase, DeleteUserUseCase deleteUserUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.listAllUserUseCase = listAllUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
+        this.deleteUserUseCase = deleteUserUseCase;
     }
 
 
@@ -96,5 +99,11 @@ public class UserController {
         CreateUserResponse response = UserMapper.toResponse(updatedUser);
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        deleteUserUseCase.execute(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
 
