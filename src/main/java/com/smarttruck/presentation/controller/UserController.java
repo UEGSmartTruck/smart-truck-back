@@ -67,15 +67,14 @@ public class UserController {
      */
     @GetMapping
     public ResponseEntity<ListAllUserResponse> findAll(
-        @RequestParam(defaultValue = "0") @Min(0) int page,
-        @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
+        @RequestParam(name = "page", defaultValue = "0") @Min(0) int page,
+        @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(100) int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<User> userPage = listAllUserUseCase.execute(pageable);
         ListAllUserResponse response = UserMapper.toListAllResponse(userPage);
         return ResponseEntity.ok(response);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<CreateUserResponse> update(

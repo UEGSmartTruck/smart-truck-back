@@ -15,7 +15,17 @@ databaseChangeLog:
           sqlFile:
               endDelimiter: ";"
     - include:
-          file: migration/V4__create_refresh_tokens_table.sql
+          file: migration/V4__add_users_active_index.sql
+          relativeToChangelogFile: true
+          sqlFile:
+              endDelimiter: ";"
+    - include:
+          file: migration/V5__create_refresh_tokens_table.sql
+          relativeToChangelogFile: true
+          sqlFile:
+              endDelimiter: ";"
+    - include:
+          file: migration/V6__create_clients_table.sql
           relativeToChangelogFile: true
           sqlFile:
               endDelimiter: ";"
